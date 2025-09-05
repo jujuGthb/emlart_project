@@ -1,0 +1,15 @@
+{
+  "generation": 0,
+  "population_size": 16,
+  "selected_indices": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "text_prompt": "bright crimson rose with deep red petals",
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "sin(exp(add(sin(_and(x, z)), _if(mult(scalar(-0.5075693044227503), z), _and(scalar(0.04556543106391775), x), xor(x, scalar(0.291001577675299))))))",
+      "fitness": 

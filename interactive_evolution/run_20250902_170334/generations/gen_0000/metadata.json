@@ -1,0 +1,15 @@
+{
+  "generation": 0,
+  "population_size": 16,
+  "selected_indices": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "text_prompt": "bright crimson rose with deep red petals",
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "cos(mult(scalar(0.25727959898888675), y))",
+      "fitness": 

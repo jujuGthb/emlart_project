@@ -1,0 +1,20 @@
+{
+  "generation": 0,
+  "population_size": 16,
+  "selected_indices": [
+    10,
+    1
+  ],
+  "text_prompt": "an image of a red square, a blue square and a yellow square",
+  "prompt_keywords": [
+    "square",
+    "image",
+    "red",
+    "blue",
+    "yellow"
+  ],
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "warp(scalar(-0.5102162923930476), scalar(0.48133548933535164), z, scalar(-0.5627240503927933))",
+      "fitness": 

@@ -1,0 +1,75 @@
+{
+  "generation": 5,
+  "population_size": 8,
+  "selected_indices": [
+    4,
+    3
+  ],
+  "text_prompt": "red flowers",
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "log(xor(sqrt(tan(abs(x))), sin(mdist(sin(x), neg(y)))))",
+      "fitness": 0.010439768180905369,
+      "depth": 5,
+      "nodes": 12,
+      "selected": false
+    },
+    {
+      "index": 1,
+      "expression": "_if(sub(cos(z), abs(scalar(0.8782983255570211))), mult(scalar(-0.576185964767681), _if(scalar(0.5218954750836411), x, scalar(0.8443771249397749))), cos(exp(z)))",
+      "fitness": 0.007911873481932317,
+      "depth": 3,
+      "nodes": 15,
+      "selected": false
+    },
+    {
+      "index": 2,
+      "expression": "_if(sub(cos(x), abs(scalar(0.8782983255570211))), mult(_if(scalar(-0.9419184248502641), scalar(-0.576185964767681), scalar(-0.24144692684524105)), _if(scalar(0.5218954750836411), x, scalar(0.8443771249397749))), cos(exp(z)))",
+      "fitness": 0.009045185964458092,
+      "depth": 3,
+      "nodes": 18,
+      "selected": false
+    },
+    {
+      "index": 3,
+      "expression": "_if(sub(cos(x), abs(scalar(0.8782983255570211))), mult(sin(scalar(-0.2013455424896302)), _if(scalar(0.5218954750836411), x, scalar(0.8443771249397749))), cos(exp(z)))",
+      "fitness": 1.0111828240167515,
+      "depth": 3,
+      "nodes": 16,
+      "selected": true
+    },
+    {
+      "index": 4,
+      "expression": "_if(sub(cos(x), abs(scalar(0.8782983255570211))), mult(xor(scalar(-0.9419184248502641), scalar(-0.576185964767681)), _if(scalar(0.5218954750836411), x, scalar(0.8443771249397749))), cos(exp(z)))",
+      "fitness": 0.0011985422513988736,
+      "depth": 3,
+      "nodes": 17,
+      "selected": true
+    },
+    {
+      "index": 5,
+      "expression": "log(tan(exp(neg(abs(log(log(scalar(-0.7924929597241319))))))))",
+      "fitness": 1.0042066210765646,
+      "depth": 7,
+      "nodes": 8,
+      "selected": false
+    },
+    {
+      "index": 6,
+      "expression": "log(_or(xor(sqrt(tan(abs(scalar(0.9092926068034703)))), sin(mdist(sin(x), neg(y)))), scalar(-0.7161469209698075)))",
+      "fitness": 0.002350580045225926,
+      "depth": 6,
+      "nodes": 14,
+      "selected": false
+    },
+    {
+      "index": 7,
+      "expression": "_if(sub(x, abs(scalar(0.8782983255570211))), _if(scalar(0.5218954750836411), x, scalar(0.8443771249397749)), cos(exp(z)))",
+      "fitness": 1.0072749891257204,
+      "depth": 3,
+      "nodes": 12,
+      "selected": false
+    }
+  ]
+}

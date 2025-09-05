@@ -1,0 +1,76 @@
+{
+  "generation": 4,
+  "population_size": 8,
+  "selected_indices": [
+    5,
+    7,
+    3
+  ],
+  "text_prompt": "red flowers",
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "_if(sub(cos(x), abs(scalar(0.8782983255570211))), neg(sub(scalar(0.317984087695635), abs(_and(mult(log(y), pow(y, scalar(-0.2910064884320611))), abs(log(scalar(0.5723140580526724))))))), cos(abs(scalar(-0.9889858433489138))))",
+      "fitness": 0.01231022731424536,
+      "depth": 7,
+      "nodes": 23,
+      "selected": false
+    },
+    {
+      "index": 1,
+      "expression": "log(xor(sqrt(tan(abs(scalar(0.9092926068034703)))), sin(mdist(sin(scalar(0.3961127036848304)), y))))",
+      "fitness": 0.004731667630204052,
+      "depth": 5,
+      "nodes": 11,
+      "selected": false
+    },
+    {
+      "index": 2,
+      "expression": "_if(sub(cos(abs(scalar(0.8782983255570211))), abs(scalar(0.8782983255570211))), mult(xor(scalar(-0.9419184248502641), scalar(-0.576185964767681)), _if(scalar(0.5218954750836411), x, scalar(0.8443771249397749))), cos(exp(z)))",
+      "fitness": 0.012637640938608153,
+      "depth": 4,
+      "nodes": 18,
+      "selected": false
+    },
+    {
+      "index": 3,
+      "expression": "_if(sub(x, abs(scalar(0.8782983255570211))), mult(xor(scalar(-0.9419184248502641), scalar(-0.576185964767681)), _if(scalar(0.5218954750836411), x, scalar(0.8443771249397749))), cos(exp(z)))",
+      "fitness": 1.000617757316094,
+      "depth": 3,
+      "nodes": 16,
+      "selected": true
+    },
+    {
+      "index": 4,
+      "expression": "log(xor(sqrt(sin(abs(scalar(0.9092926068034703)))), sin(mdist(sin(x), neg(y)))))",
+      "fitness": 0.011488433331174809,
+      "depth": 5,
+      "nodes": 12,
+      "selected": false
+    },
+    {
+      "index": 5,
+      "expression": "_if(sub(cos(x), abs(scalar(0.8782983255570211))), sub(xor(scalar(-0.9419184248502641), scalar(-0.576185964767681)), _if(scalar(0.5218954750836411), x, scalar(0.8443771249397749))), cos(exp(z)))",
+      "fitness": 0.002113346189595498,
+      "depth": 3,
+      "nodes": 17,
+      "selected": true
+    },
+    {
+      "index": 6,
+      "expression": "_if(sub(cos(x), abs(scalar(0.8782983255570211))), mult(xor(scalar(-0.9419184248502641), scalar(-0.576185964767681)), _if(scalar(0.5218954750836411), x, scalar(0.8443771249397749))), cos(abs(abs(scalar(-0.9889858433489138)))))",
+      "fitness": 0.007257082781194363,
+      "depth": 4,
+      "nodes": 18,
+      "selected": false
+    },
+    {
+      "index": 7,
+      "expression": "_if(sub(cos(x), abs(scalar(0.8782983255570211))), mult(scalar(-0.576185964767681), _if(scalar(0.5218954750836411), x, scalar(0.8443771249397749))), cos(exp(z)))",
+      "fitness": 1.0096776339436007,
+      "depth": 3,
+      "nodes": 15,
+      "selected": true
+    }
+  ]
+}

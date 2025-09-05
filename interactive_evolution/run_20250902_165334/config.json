@@ -1,0 +1,8 @@
+{
+  "population_size": 16,
+  "generations": 20,
+  "resolution": "256x256",
+  "seed": 42,
+  "text_prompt": "red rose flower ",
+  "clip_available": false
+}

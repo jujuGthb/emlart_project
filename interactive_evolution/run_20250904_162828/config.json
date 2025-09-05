@@ -1,0 +1,8 @@
+{
+  "population_size": 10,
+  "generations": 20,
+  "resolution": "256x256",
+  "seed": 1,
+  "text_prompt": "n image of a red square, a blue square and a yellow square",
+  "clip_available": false
+}

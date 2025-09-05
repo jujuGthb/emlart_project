@@ -1,0 +1,14 @@
+{
+  "population_size": 16,
+  "generations": 20,
+  "resolution": "256x256",
+  "seed": 42,
+  "initial_prompt": "an image of a red square, a blue square and a yellow square",
+  "prompt_keywords": [
+    "square",
+    "image",
+    "red",
+    "blue",
+    "yellow"
+  ]
+}
