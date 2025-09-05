@@ -629,4 +629,4 @@ if __name__ == "__main__":
         # For now, just set defaults and launch GUI
         
     # Launch Gradio interface
-    demo.launch(share=True, server_name="0.0.0.0", server_port=7880)
+    demo.launch(share=True, server_name="0.0.0.0", server_port=7860)
