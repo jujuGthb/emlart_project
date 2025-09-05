@@ -1,0 +1,8 @@
+{
+  "population_size": 16,
+  "generations": 20,
+  "resolution": "256x256",
+  "seed": 51,
+  "text_prompt": "bright sun",
+  "clip_available": false
+}

@@ -2961,7 +2961,7 @@ class Engine:
             
 # Additional methods to add to the Engine
 
-    def run_single_step(self, wait_for_selection=True):
+    # def run_single_step(self, wait_for_selection=True):
         """
         Run a single generation step of evolution.
         This method is designed for interactive evolution where fitness 
@@ -2983,7 +2983,7 @@ class Engine:
         
         # If this is the first generation, initialize
         if self.current_generation == 0:
-            # Population should already be initialized
+           
             if len(self.population) == 0:
                 raise ValueError("Population not initialized. Call initialize_population first.")
             
@@ -3042,7 +3042,162 @@ class Engine:
         
         return self.population, all_tensors
 
+    def run_single_step(self, wait_for_selection=True):
+        """
+        Args:
+            wait_for_selection: If True, assumes fitness has been assigned externally
+        
+        Returns:
+            Tuple of (population, tensors) for the current generation
+        """
+        
+        # Check if evolution should continue
+        if not self.condition():
+            return None, None
+        
+        # Set directory for this generation
+        self.experiment.set_generation_directory(self.current_generation, self.can_save_image_pop)
+        
+        # If this is the first generation, initialize
+        if self.current_generation == 0:
+            if len(self.population) == 0:
+                raise ValueError("Population not initialized. Call initialize_population first.")
+            
+            # Calculate tensors for display (without fitness evaluation if waiting for selection)
+            with tf.device(self.device):
+                tensors, _ = self.calculate_tensors(self.population)
+            
+            # Only evaluate fitness if not waiting for selection
+            if not wait_for_selection:
+                self.population, _ = self.fitness_func_wrap(
+                    population=self.population, 
+                    f_path=self.experiment.cur_image_directory
+                )
+            
+            return self.population, tensors
+        
+        # Create new population from previous generation (elitism)
+        new_population = self.get_n_best_from_pop(population=self.population, n=self.elitism)
+        
+        # Generate offspring
+        temp_population = []
+        retrie_cnt = []
+        
+        for _ in range(self.population_size - self.elitism):
+            rcnt = 0
+            
+            # Bloat control handling
+            if self.bloat_control == "off":
+                member_depth = float('inf')
+                
+                while member_depth > self.max_tree_depth and rcnt < self.max_retries:
+                    indiv_temp, parent, plist = self.selection()
+                    member_depth, member_nodes = indiv_temp.get_depth()
+                    rcnt += 1
+                    
+                if member_depth > self.max_tree_depth:
+                    indiv_temp = parent['tree']
+                    member_depth = parent['depth']
+                    member_nodes = parent['nodes']
+                    
+                retrie_cnt.append(rcnt)
+            else:
+                indiv_temp, _, plist = self.selection()
+                member_depth, member_nodes = indiv_temp.get_depth()
+            
+            temp_population.append(
+                new_individual(indiv_temp, fitness=0, depth=member_depth, 
+                            nodes=member_nodes, valid=False, parents=plist)
+            )
+        
+        # Calculate tensors for new individuals only
+        with tf.device(self.device):
+            temp_tensors, temp_time = self.calculate_tensors(temp_population)
+        
+        # Handle fitness evaluation based on wait_for_selection flag
+        if not wait_for_selection:
+            # Full fitness evaluation using fitness_func_wrap
+            temp_population, _ = self.fitness_func_wrap(
+                population=temp_population, 
+                f_path=self.experiment.cur_image_directory
+            )
+            
+            # Handle bloat control if enabled
+            if self.bloat_control != "off":
+                # Apply bloat control logic here
+                accepted = 0
+                depth_mode = self.bloat_mode == 'depth'
+                best_fit = self.best_overall['fitness']
+                temp_limit = self.dynamic_limit
 
+                for current_individual in range(len(temp_population)):
+                    ind = temp_population[current_individual]
+                    my_limit = get_largest_parent(ind, depth=depth_mode) if has_illegal_parents(
+                        ind) else self.dynamic_limit
+
+                    sizeind = ind['depth'] if depth_mode else ind['nodes']
+
+                    if self.min_overall_size <= sizeind <= self.max_overall_size:
+                        fitnessind = ind['fitness']
+
+                        if sizeind <= my_limit:
+                            ind['valid'] = True
+                            accepted += 1
+                            if ((self.objective == 'minimizing') and (fitnessind < best_fit)) or (
+                                    (self.objective != 'minimizing') and (fitnessind > best_fit)):
+                                best_fit = fitnessind
+
+                            if (self.bloat_control == 'very heavy') or (
+                                    (self.bloat_control == 'heavy') and (sizeind >= self.initial_dynamic_limit)):
+                                if self.lock_dynamic_limit:
+                                    temp_limit = sizeind
+                                else:
+                                    self.dynamic_limit = sizeind
+
+                        if sizeind > self.dynamic_limit and (
+                                (self.objective == 'minimizing') and (fitnessind < best_fit)) or (
+                                (self.objective != 'minimizing') and (fitnessind > best_fit)):
+                            ind['valid'] = True
+                            accepted += 1
+                            best_fit = fitnessind
+                            if self.lock_dynamic_limit:
+                                temp_limit = sizeind
+                            else:
+                                self.dynamic_limit = sizeind
+
+                if self.lock_dynamic_limit:
+                    self.dynamic_limit = temp_limit
+
+                # Filter valid individuals
+                valid_temp = []
+                for ind in temp_population:
+                    if ind.get('valid', True):
+                        valid_temp.append(ind)
+                    else:
+                        # Replace with random parent if invalid
+                        if ind.get('parents'):
+                            valid_temp.append(self.engine_rng.choice(ind['parents']))
+                        else:
+                            valid_temp.append(ind)  # Keep anyway if no parents
+                
+                temp_population = valid_temp
+        
+        # If wait_for_selection=True, skip fitness evaluation
+        # The tensors are already calculated above
+        
+        # Combine populations
+        new_population += temp_population
+        self.population = new_population
+        
+        # Calculate all tensors for the complete population (for display)
+        with tf.device(self.device):
+            all_tensors, _ = self.calculate_tensors(self.population)
+        
+        # Update timing
+        self.elapsed_tensor_time += temp_time
+        self.recent_tensor_time = temp_time
+        
+        return self.population, all_tensors
 
     def assign_fitness_from_selection(self, selected_indices, fitness_func=None):
         """

@@ -43,7 +43,7 @@ def initialize_clip():
     """Initialize CLIP model if available"""
     global vit_model, preprocess
     if CLIP_AVAILABLE:
-        vit_model, preprocess = clip.load("ViT-B/32", device=device)
+        vit_model, preprocess = clip.load("ViT-L-14", device=device)
         return True
     return False
 
@@ -227,7 +227,7 @@ def user_guided_evaluation(**kwargs):
         # Add text prompt component if available
         if current_text_prompt:
             if CLIP_AVAILABLE and text_features is not None:
-                # Use CLIP similarity if available
+             
                 clip_score = calculate_clip_similarity(tensors[idx])
                 # Higher weight for generation 0 when no manual selection exists
                 clip_weight = 1.0 if (current_generation == 0 and len(selected_indices) == 0) else 0.5
@@ -437,7 +437,7 @@ def initialize_evolution(pop_size, num_gens, resolution, seed, text_prompt):
         max_nodes=current_engine.max_nodes
     )
     
-    # NEW: If we have a text prompt, evaluate initial population based on it
+    # If we have a text prompt, evaluate initial population based on it
     if text_prompt:
         print("Evaluating initial population with text guidance...")
         population, best = current_engine.fitness_func_wrap(
@@ -611,10 +611,9 @@ with gr.Blocks(title="Interactive Evolutionary Art") as demo:
 
 # Command-line interface support
 if __name__ == "__main__":
-    # Check if running from command line with arguments
+   
     if len(sys.argv) > 1:
-        # Parse command line arguments
-        # Format: python script.py [seed] [num_runs] [generations] ["prompt"]
+        # Format: python emlart_gp.py [seed] [num_runs] [generations] ["prompt"]
         seed = int(sys.argv[1]) if len(sys.argv) > 1 else 42
         num_runs = int(sys.argv[2]) if len(sys.argv) > 2 else 1
         generations = int(sys.argv[3]) if len(sys.argv) > 3 else 20
@@ -630,4 +629,4 @@ if __name__ == "__main__":
         # For now, just set defaults and launch GUI
         
     # Launch Gradio interface
-    demo.launch(share=True, server_name="0.0.0.0", server_port=7860)
+    demo.launch(share=True, server_name="0.0.0.0", server_port=7880)
