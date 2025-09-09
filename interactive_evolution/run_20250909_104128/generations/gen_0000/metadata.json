@@ -1,0 +1,14 @@
+{
+  "generation": 0,
+  "population_size": 10,
+  "selected_indices": [
+    0,
+    2,
+    6
+  ],
+  "text_prompt": "bright moon",
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "_if(_if(sqrt(_or(mult(mdist(scalar(-0.9736333749997099), scalar(0.38657873214981797)), min(scalar(-0.9441534257523339), y)), warp(tan(x), pow(scalar(0.7851276785675982), x), _and(scalar(-0.6733607739521967), z), sqrt(scalar(-0.6849612630708788))))), scalar(-0.7564574737753211), y), warp(div(div(_and(abs(z), scalar(-0.4037630634875333)), mult(y, sqrt(y))), mult(y, abs(div(scalar(0.21868416403826463), scalar(-0.9827739525332506))))), sqrt(z), xor(mult(exp(sub(scalar(0.8061597185095735), scalar(0.6636790766889205))), add(frac(scalar(0.32390047000399047)), pow(y, x))), mdist(xor(add(z, scalar(0.8566104632841136)), scalar(0.6543168216626756)), add(_and(scalar(-0.7243498012913703), scalar(0.7775060508651286)), abs(scalar(-0.45155846145368894))))), add(x, min(max(warp(x, scalar(-0.872159112184629), z, scalar(0.5776703835663699)), neg(scalar(-0.042780281796950925))), log(neg(y))))), tan(log(abs(tan(warp(scalar(-0.826514736783033), x, z, scalar(0.33751319670856605)))))))",
+      "fitness": 

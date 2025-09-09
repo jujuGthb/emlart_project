@@ -1,0 +1,8 @@
+{
+  "population_size": 40,
+  "generations": 20,
+  "resolution": "256x256",
+  "seed": 42,
+  "text_prompt": "",
+  "clip_available": false
+}

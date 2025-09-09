@@ -7,6 +7,8 @@ import json
 import time
 from typing import List, Tuple
 import sys
+import copy
+import io
 
 
 #Check device and CLIP availability 
@@ -26,6 +28,7 @@ except Exception as e:
     CLIP_AVAILABLE = False
     device = "cpu"
     
+    
 # Global variables for managing evolution state
 current_engine = None
 current_population = None
@@ -38,6 +41,10 @@ text_features = None  # For CLIP text prompt
 vit_model = None  # CLIP model
 preprocess = None  # CLIP preprocessing
 current_text_prompt = None  # Store current prompt globally
+generation_history = {}  # Store all generations: {gen_num: {'population': pop, 'tensors': tensors, 'metadata': dict}}
+current_display_generation = 0
+navigation_enabled = False
+stats_data = []  # Store statistics over time
 
 def initialize_clip():
     """Initialize CLIP model if available"""
@@ -120,9 +127,9 @@ def save_generation_metadata(population, selected, generation, directory, prompt
         metadata["individuals"].append({
             "index": idx,
             "expression": ind['tree'].get_str(),
-            "fitness": ind['fitness'],
-            "depth": ind['depth'],
-            "nodes": ind['nodes'],
+            "fitness": float(ind['fitness']),
+            "depth": int(ind['depth']),
+            "nodes": int(ind['nodes']),
             "selected": idx in selected
         })
     
@@ -304,13 +311,20 @@ def on_image_select(evt: gr.SelectData, gallery_state):
 
 def submit_selection(gallery_state, text_prompt):
     """Submit user selection and proceed to next generation"""
-    global selected_indices, current_generation, current_engine, work_directory, current_text_prompt
+    global selected_indices, current_generation, current_engine, work_directory, current_text_prompt, navigation_enabled, current_display_generation
+    
+    # Don't allow submission when navigating history
+    if navigation_enabled:
+        return gallery_state, "Cannot submit selection while viewing historical generation. Return to current generation first.", get_current_images()
     
     if gallery_state is None:
         gallery_state = []
     
     selected_indices = gallery_state.copy()
     current_text_prompt = text_prompt  # Update global prompt
+    
+    # Save current generation to history before proceeding
+    save_generation_to_history()
     
     # Save current generation data
     if current_tensors is not None and work_directory is not None:
@@ -320,6 +334,7 @@ def submit_selection(gallery_state, text_prompt):
         save_generation_metadata(current_population, selected_indices, current_generation, work_directory, text_prompt)
     
     current_generation += 1
+    current_display_generation = current_generation  # Keep them in sync
     
     # Run next generation if engine exists
     if current_engine is not None and current_generation <= current_engine.stop_value:
@@ -332,7 +347,7 @@ def submit_selection(gallery_state, text_prompt):
 
 def initialize_evolution(pop_size, num_gens, resolution, seed, text_prompt):
     """Initialize the evolutionary engine"""
-    global current_engine, current_generation, work_directory, current_text_prompt
+    global current_engine, current_generation, work_directory, current_text_prompt, current_display_generation
     
     # Store the text prompt globally
     current_text_prompt = text_prompt
@@ -381,7 +396,7 @@ def initialize_evolution(pop_size, num_gens, resolution, seed, text_prompt):
         tournament_size=5,
         mutation_rate=0.9,
         crossover_rate=0.5,
-        elitism=max(2, int(pop_size) // 10),
+        elitism=max(4, int(pop_size) // 3),
         
         terminal_prob=0.2,
         scalar_prob=0.50,
@@ -426,6 +441,7 @@ def initialize_evolution(pop_size, num_gens, resolution, seed, text_prompt):
     )
     
     current_generation = 0
+    current_display_generation = 0  # Initialize display generation
     
     # Initialize population
     current_engine.experiment.set_generation_directory(0, lambda: False)
@@ -506,67 +522,558 @@ def run_single_generation():
     
     return f"Generation {current_engine.current_generation} complete", get_current_images()
 
-# Create Gradio interface
-with gr.Blocks(title="Interactive Evolutionary Art") as demo:
-    gr.Markdown("# Interactive Evolutionary Art System")
-    gr.Markdown("Guide evolution by selecting favorites and/or using text descriptions")
+def save_generation_to_history():
+    """Save current generation to history for navigation"""
+    global generation_history, current_generation, current_population, current_tensors
     
-    with gr.Tab("Setup"):
+    if current_population is not None and current_tensors is not None:
+        # Calculate statistics - fix the syntax errors
+        fitness_values = [float(ind['fitness']) for ind in current_population]
+        depth_values = [int(ind['depth']) for ind in current_population]
+        nodes_values = [int(ind['nodes']) for ind in current_population]
+        
+        metadata = {
+            'generation': current_generation,
+            'selected_indices': selected_indices.copy(),
+            'text_prompt': current_text_prompt,
+            'fitness_stats': {
+                'avg': float(np.mean(fitness_values)) if fitness_values else 0.0,
+                'std': float(np.std(fitness_values)) if fitness_values else 0.0,
+                'max': float(np.max(fitness_values)) if fitness_values else 0.0,
+                'min': float(np.min(fitness_values)) if fitness_values else 0.0
+            },
+            'depth_stats': {
+                'avg': float(np.mean(depth_values)) if depth_values else 0.0,
+                'max': int(np.max(depth_values)) if depth_values else 0,
+                'min': int(np.min(depth_values)) if depth_values else 0
+            },
+            'nodes_stats': {
+                'avg': float(np.mean(nodes_values)) if nodes_values else 0.0,
+                'max': int(np.max(nodes_values)) if nodes_values else 0,
+                'min': int(np.min(nodes_values)) if nodes_values else 0
+            },
+            'timestamp': time.time()
+        }
+        
+        generation_history[current_generation] = {
+            'population': copy.deepcopy(current_population),
+            'tensors': [tensor.numpy().copy() for tensor in current_tensors],
+            'metadata': metadata
+        }
+        
+        # Update global stats
+        stats_data.append([
+            current_generation,
+            metadata['fitness_stats']['avg'],
+            metadata['fitness_stats']['std'],
+            metadata['fitness_stats']['max'],
+            metadata['depth_stats']['avg'],
+            metadata['nodes_stats']['avg'],
+            len(selected_indices)
+        ])
+
+def navigate_to_generation(target_gen):
+    """Navigate to a specific generation"""
+    global current_display_generation, navigation_enabled, current_tensors
+    
+    if target_gen in generation_history:
+        current_display_generation = target_gen
+        navigation_enabled = True
+        
+        # Update current_tensors to show historical images
+        stored_tensors = generation_history[target_gen]['tensors']
+        current_tensors = [tf.convert_to_tensor(tensor_array) for tensor_array in stored_tensors]
+        
+        # Get images from history
+        images = []
+        for i, tensor_array in enumerate(stored_tensors):
+            img_array = np.clip(tensor_array, 0, 255).astype(np.uint8)
+            if len(img_array.shape) == 2:
+                img = Image.fromarray(img_array, mode='L')
+            else:
+                img = Image.fromarray(img_array)
+            images.append((img, f"Gen {target_gen} - Image {i}"))
+        
+        metadata = generation_history[target_gen]['metadata']
+        status = f"Viewing Generation {target_gen} (Historical)"
+        selection_status = f"Previous selections: {metadata['selected_indices']}"
+        
+        return images, status, selection_status, target_gen
+    else:
+        return [], f"Generation {target_gen} not found in history", "Selected: []", current_display_generation
+
+def go_back_generation():
+    """Navigate to previous generation"""
+    global current_display_generation
+    
+    available_gens = sorted(generation_history.keys())
+    if available_gens:
+        current_idx = available_gens.index(current_display_generation) if current_display_generation in available_gens else len(available_gens) - 1
+        if current_idx > 0:
+            return navigate_to_generation(available_gens[current_idx - 1])
+    
+    return get_current_images(), f"Already at earliest generation ({current_display_generation})", "Selected: []", current_display_generation
+
+def go_forward_generation():
+    """Navigate to next generation"""
+    global current_display_generation
+    
+    available_gens = sorted(generation_history.keys())
+    if available_gens:
+        current_idx = available_gens.index(current_display_generation) if current_display_generation in available_gens else 0
+        if current_idx < len(available_gens) - 1:
+            return navigate_to_generation(available_gens[current_idx + 1])
+    
+    return get_current_images(), f"Already at latest generation ({current_display_generation})", "Selected: []", current_display_generation
+
+def go_to_current_generation():
+    """Return to the current active generation"""
+    global navigation_enabled, current_display_generation, current_tensors
+    
+    navigation_enabled = False
+    current_display_generation = current_generation
+    
+    # Restore current generation tensors
+    if current_engine and current_engine.population:
+        with tf.device(device):
+            current_tensors, _ = current_engine.calculate_tensors(current_engine.population)
+    
+    images = get_current_images()
+    status = f"Returned to current generation {current_generation}"
+    selection_status = f"Selected: {selected_indices}"
+    
+    return images, status, selection_status, current_generation
+
+def get_statistics_plot():
+    """Generate statistics plot"""
+    if not stats_data:
+        return None
+    
+    import matplotlib.pyplot as plt
+    
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 8))
+    
+    generations = [row[0] for row in stats_data]
+    fitness_avg = [row[1] for row in stats_data]
+    fitness_std = [row[2] for row in stats_data]
+    fitness_max = [row[3] for row in stats_data]
+    depth_avg = [row[4] for row in stats_data]
+    nodes_avg = [row[5] for row in stats_data]
+    selections = [row[6] for row in stats_data]
+    
+    # Fitness evolution
+    ax1.plot(generations, fitness_avg, label='Average', color='blue')
+    ax1.plot(generations, fitness_max, label='Maximum', color='red')
+    ax1.fill_between(generations, 
+                     [avg - std for avg, std in zip(fitness_avg, fitness_std)],
+                     [avg + std for avg, std in zip(fitness_avg, fitness_std)],
+                     alpha=0.3, color='blue')
+    ax1.set_title('Fitness Evolution')
+    ax1.set_xlabel('Generation')
+    ax1.set_ylabel('Fitness')
+    ax1.legend()
+    ax1.grid(True)
+    
+    # Complexity evolution
+    ax2.plot(generations, depth_avg, label='Avg Depth', color='green')
+    ax2.plot(generations, nodes_avg, label='Avg Nodes', color='orange')
+    ax2.set_title('Complexity Evolution')
+    ax2.set_xlabel('Generation')
+    ax2.set_ylabel('Complexity')
+    ax2.legend()
+    ax2.grid(True)
+    
+    # Selection pressure
+    ax3.bar(generations, selections, alpha=0.7, color='purple')
+    ax3.set_title('Selection Pressure')
+    ax3.set_xlabel('Generation')
+    ax3.set_ylabel('Number of Selected Individuals')
+    ax3.grid(True)
+    
+    # Summary statistics
+    if generations:
+        total_gens = len(generations)
+        avg_fitness_overall = np.mean(fitness_avg)
+        max_fitness_overall = np.max(fitness_max)
+        avg_selections = np.mean(selections)
+        
+        ax4.text(0.1, 0.8, f"Total Generations: {total_gens}", transform=ax4.transAxes, fontsize=12)
+        ax4.text(0.1, 0.6, f"Avg Fitness: {avg_fitness_overall:.3f}", transform=ax4.transAxes, fontsize=12)
+        ax4.text(0.1, 0.4, f"Best Fitness: {max_fitness_overall:.3f}", transform=ax4.transAxes, fontsize=12)
+        ax4.text(0.1, 0.2, f"Avg Selections: {avg_selections:.1f}", transform=ax4.transAxes, fontsize=12)
+        ax4.set_title('Summary Statistics')
+        ax4.axis('off')
+    
+    plt.tight_layout()
+    
+    # Convert to base64 for display
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', dpi=100, bbox_inches='tight')
+    buffer.seek(0)
+    plt.close(fig)
+    
+    return buffer.getvalue()
+
+def get_generation_history_table():
+    """Get complete generation history table data"""
+    if not stats_data:
+        return []
+    
+    table_data = []
+    for row in stats_data:
+        table_data.append([
+            int(row[0]),          # Generation
+            f"{row[1]:.3f}",      # Avg Fitness
+            f"{row[3]:.3f}",      # Max Fitness
+            f"{row[4]:.1f}",      # Avg Depth
+            f"{row[5]:.1f}",      # Avg Nodes
+            int(row[6])           # Selections
+        ])
+    
+    return table_data
+
+# Create Gradio interface
+with gr.Blocks(title="Interactive Evolutionary Art", css="""
+    /* Main title styling */
+    .main-header {
+        text-align: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Section headers */
+    .section-header {
+        color: #2d3748;
+        font-weight: bold;
+        font-size: 1.2em;
+        margin: 15px 0 10px 0;
+        padding: 8px 12px;
+        background: linear-gradient(90deg, #e2e8f0 0%, #f7fafc 100%);
+        border-left: 4px solid #4299e1;
+        border-radius: 4px;
+    }
+    
+    /* Keep gallery images at smaller consistent size */
+    .gallery-item img {
+        width: 120px !important;
+        height: 120px !important;
+        object-fit: cover !important;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        border: 2px solid #e2e8f0;
+    }
+    
+    /* Selection styling - green border */
+    .gallery-item.selected {
+        border: 3px solid #00ff00 !important;
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.5) !important;
+    }
+    
+    /* Hover effect */
+    .gallery-item:hover img {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-color: #4299e1;
+    }
+    
+    /* Ensure gallery container is more compact */
+    .gallery-container {
+        min-height: 400px;
+        max-height: 500px;
+        border-radius: 8px;
+        background: #f8f9fa;
+        padding: 10px;
+    }
+    
+    /* Fix selection indicators */
+    .gallery-item::after {
+        content: "✓";
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: #00ff00;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        font-size: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .gallery-item.selected::after {
+        opacity: 1;
+    }
+    
+    /* Button styling */
+    .nav-button {
+        margin: 2px;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    
+    /* Status boxes */
+    .status-box {
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 8px;
+    }
+    
+    /* History table styling */
+    .history-panel {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Tab styling */
+    .tab-nav button {
+        font-weight: 500;
+        border-radius: 6px 6px 0 0;
+    }
+    
+    /* Instructions accordion */
+    .instructions {
+        background: #fef7e0;
+        border: 1px solid #f6e05e;
+        border-radius: 6px;
+        margin-top: 15px;
+    }
+""") as demo:
+    
+    # Main header with styling
+    gr.HTML("""
+        <div class="main-header">
+            <h1 style="margin: 0; font-size: 2.5em;">🎨 Interactive Evolutionary Art System</h1>
+            <p style="margin: 10px 0 0 0; font-size: 1.1em; opacity: 0.9;">
+                Guide evolution by selecting favorites and using text descriptions
+            </p>
+        </div>
+    """)
+    
+    with gr.Tab("🚀 Setup"):
+        gr.HTML('<div class="section-header">🔧 Evolution Parameters</div>')
+        
         with gr.Row():
             with gr.Column():
-                pop_size_input = gr.Number(value=16, label="Population Size", minimum=4, maximum=100)
-                num_gens_input = gr.Number(value=20, label="Number of Generations", minimum=1, maximum=100)
+                pop_size_input = gr.Number(
+                    value=10, 
+                    label="👥 Population Size", 
+                    minimum=4, 
+                    maximum=100,
+                    info="Number of individuals per generation"
+                )
+                num_gens_input = gr.Number(
+                    value=30, 
+                    label="🔄 Number of Generations", 
+                    minimum=1, 
+                    maximum=100,
+                    info="Maximum generations to evolve"
+                )
             with gr.Column():
                 resolution_input = gr.Dropdown(
                     choices=["128x128", "256x256", "512x512"],
                     value="256x256",
-                    label="Image Resolution"
+                    label="📐 Image Resolution",
+                    info="Higher resolution = better quality, slower processing"
                 )
-                seed_input = gr.Number(value=42, label="Random Seed (optional)")
+                seed_input = gr.Number(
+                    value=42, 
+                    label="🎲 Random Seed (optional)",
+                    info="Use same seed for reproducible results"
+                )
+        
+        gr.HTML('<div class="section-header">💭 Text Guidance</div>')
         
         text_prompt_input = gr.Textbox(
-            label="Text Prompt (REQUIRED for guided evolution)",
+            label="📝 Text Prompt (REQUIRED for guided evolution)",
             placeholder="e.g., 'bright colorful patterns' or 'dark geometric shapes' or 'smooth flowing curves'",
             value="",
-            info="Enter a description to guide the initial generation. Even without CLIP, basic text guidance will be used."
+            info="Enter a description to guide the initial generation. Even without CLIP, basic text guidance will be used.",
+            lines=2
         )
-        
-        init_button = gr.Button("Initialize Evolution", variant="primary")
-        init_status = gr.Textbox(label="Status", interactive=False)
-    
-    with gr.Tab("Evolution"):
-        gen_status = gr.Textbox(label="Generation Status", value="Not started", interactive=False)
-        
-        gallery = gr.Gallery(
-            label="Current Generation",
-            show_label=True,
-            elem_id="gallery",
-            columns=4,
-            rows=4,
-            object_fit="contain",
-            height="auto",
-            interactive=True
-        )
-        
-        gallery_state = gr.State([])
-        selection_status = gr.Textbox(label="Selected Images", value="Selected: []", interactive=False)
         
         with gr.Row():
-            submit_button = gr.Button("Submit Selection & Next Generation", variant="primary")
-            auto_run_button = gr.Button("Run Generation (Auto-select best)", variant="secondary")
+            init_button = gr.Button("🚀 Initialize Evolution", variant="primary", size="lg")
+            
+        init_status = gr.Textbox(label="📊 Status", interactive=False, elem_classes=["status-box"])
+    
+    with gr.Tab("🧬 Evolution"):
+        # Generation status at the top
+        gr.HTML('<div class="section-header">📈 Generation Status</div>')
         
-        gr.Markdown("### Instructions:")
-        gr.Markdown("1. **Enter a text description** in the Setup tab to guide evolution")
-        gr.Markdown("2. Click images to select favorites (they will be highlighted)")
-        gr.Markdown("3. Click 'Submit Selection' to evolve to next generation")
-        gr.Markdown("4. The first generation will be evaluated based on your text prompt")
-        gr.Markdown("5. Subsequent generations combine user selection + text similarity")
+        with gr.Row():
+            with gr.Column(scale=2):
+                gen_status = gr.Textbox(
+                    label="🔄 Generation Status", 
+                    value="Not started", 
+                    interactive=False,
+                    elem_classes=["status-box"]
+                )
+            with gr.Column(scale=1):
+                current_gen_display = gr.Number(
+                    label="📊 Current Generation", 
+                    value=0, 
+                    interactive=False
+                )
+        
+        # Main content area - images on left, generation history on right
+        with gr.Row():
+            # Evolution panel (left side)
+            with gr.Column(scale=3):
+                gr.HTML('<div class="section-header">🎨 Current Generation</div>')
+                
+                gallery = gr.Gallery(
+                    label="Evolution Gallery",
+                    show_label=False,
+                    elem_id="gallery",
+                    columns=4,
+                    rows=3,
+                    object_fit="cover",
+                    height=400,
+                    interactive=True,
+                    container=True,
+                    allow_preview=True,
+                    elem_classes=["gallery-container"]
+                )
+                
+                gallery_state = gr.State([])
+                selection_status = gr.Textbox(
+                    label="✅ Selected Images", 
+                    value="Selected: []", 
+                    interactive=False,
+                    elem_classes=["status-box"]
+                )
+                
+                # Action buttons (both in same row)
+                gr.HTML('<div class="section-header">⚡ Evolution Actions</div>')
+                with gr.Row():
+                    submit_button = gr.Button(
+                        "🚀 Submit Selection & Next Generation", 
+                        variant="primary", 
+                        scale=2
+                    )
+                    auto_run_button = gr.Button(
+                        "🤖 Auto-select Best", 
+                        variant="secondary",
+                        scale=1
+                    )
+            
+            # Generation History panel (right side) - WITH NAVIGATION
+            with gr.Column(scale=2):
+                gr.HTML('<div class="section-header">📊 Generation History</div>')
+                with gr.Group(elem_classes=["history-panel"]):
+                    history_table = gr.Dataframe(
+                        headers=["Gen", "Avg Fitness", "Max Fitness", "Avg Depth", "Avg Nodes", "Selections"],
+                        datatype=["number", "number", "number", "number", "number", "number"],
+                        label="📈 Statistics Over Time",
+                        interactive=False,
+                        show_label=False
+                    )
+                
+                # Navigation controls (under the history table)
+                gr.HTML('<div class="section-header">🧭 Navigation Controls</div>')
+                with gr.Column():
+                    back_button = gr.Button(
+                        "⬅️ Previous Generation", 
+                        variant="secondary",
+                        elem_classes=["nav-button"],
+                        size="sm"
+                    )
+                    current_button = gr.Button(
+                        "🎯 Current Generation", 
+                        variant="primary",
+                        elem_classes=["nav-button"],
+                        size="sm"
+                    )
+                    forward_button = gr.Button(
+                        "➡️ Next Generation", 
+                        variant="secondary",
+                        elem_classes=["nav-button"],
+                        size="sm"
+                    )
+        
+        # Instructions at the bottom
+        with gr.Accordion("📖 Instructions", open=False, elem_classes=["instructions"]):
+            gr.Markdown("""
+                ### 🎯 How to Use:
+                
+                **1. Setup Phase:**
+                - 🔧 Configure evolution parameters in the Setup tab
+                - 📝 **Enter a text description** to guide evolution (required)
+                - 🚀 Click "Initialize Evolution"
+                
+                **2. Evolution Phase:**
+                - 🖱️ **Click images** to select your favorites (they'll show green borders)
+                - 🚀 **Submit Selection** to evolve to the next generation
+                - 🧭 Use **navigation buttons** (on the right) to view previous generations
+                - 📊 Watch the **generation history table** update automatically
+                
+                **3. Tips:**
+                - 🎨 The first generation uses your text prompt for guidance
+                - 🔄 Later generations combine your selections + text similarity
+                - 🤖 Use "Auto-select best" for hands-off evolution
+                - 📈 Monitor progress in the statistics table
+            """)
+    
+    with gr.Tab("📊 Detailed Statistics"):
+        gr.HTML('<div class="section-header">📈 Evolution Analytics</div>')
+        
+        stats_plot = gr.Image(
+            label="📊 Evolution Statistics Plots", 
+            type="pil",
+            show_label=True
+        )
+        
+        gr.HTML('<div class="section-header">🔍 Detailed Analysis</div>')
+        gr.Markdown("""
+            ### 📊 Comprehensive Statistical Analysis
+            
+            This tab provides detailed visualizations of the evolutionary process:
+            
+            - **📈 Fitness Evolution:** Track average and maximum fitness over generations
+            - **🧠 Complexity Evolution:** Monitor tree depth and node count trends  
+            - **👆 Selection Pressure:** Visualize user selection patterns
+            - **📋 Summary Statistics:** Overall evolution metrics and trends
+            
+            Statistics update automatically when new generations are created!
+        """)
+        
+        # Refresh button at the bottom of statistics tab
+        refresh_stats_button = gr.Button(
+            "🔄 Refresh Statistics", 
+            variant="primary"
+        )
+    
+    # Helper function for statistics updates
+    def update_statistics_if_data():
+        """Update statistics plot if data exists"""
+        if stats_data:
+            plot_bytes = get_statistics_plot()
+            if plot_bytes:
+                return Image.open(io.BytesIO(plot_bytes))
+        return None
     
     # Event handlers
     init_button.click(
         fn=initialize_evolution,
         inputs=[pop_size_input, num_gens_input, resolution_input, seed_input, text_prompt_input],
         outputs=[init_status, gallery]
+    ).then(
+        fn=lambda: (0, get_generation_history_table(), update_statistics_if_data()),
+        outputs=[current_gen_display, history_table, stats_plot]
     )
     
     gallery.select(
@@ -578,13 +1085,17 @@ with gr.Blocks(title="Interactive Evolutionary Art") as demo:
     def handle_submit(state, prompt):
         """Handle submit button click"""
         new_state, status, images = submit_selection(state, prompt)
-        gen_status, new_images = run_single_generation()
-        return new_state, gen_status, new_images
+        if "Cannot submit" not in status:
+            gen_status, new_images = run_single_generation()
+            stats_img = update_statistics_if_data()
+            return new_state, gen_status, new_images, current_display_generation, get_generation_history_table(), stats_img
+        else:
+            return new_state, status, images, current_display_generation, get_generation_history_table(), None
     
     submit_button.click(
         fn=handle_submit,
         inputs=[gallery_state, text_prompt_input],
-        outputs=[gallery_state, gen_status, gallery]
+        outputs=[gallery_state, gen_status, gallery, current_gen_display, history_table, stats_plot]
     ).then(
         fn=lambda: ([], "Selected: []"),
         outputs=[gallery_state, selection_status]
@@ -592,21 +1103,70 @@ with gr.Blocks(title="Interactive Evolutionary Art") as demo:
     
     def handle_auto_run(prompt):
         """Auto-select top individuals and run generation"""
-        global current_population, current_text_prompt
-        current_text_prompt = prompt  # Update prompt
+        global current_population, current_text_prompt, navigation_enabled
+        
+        if navigation_enabled:
+            return [], "Cannot auto-run while viewing historical generation. Return to current generation first.", [], current_display_generation, get_generation_history_table(), None
+        
+        current_text_prompt = prompt
         if current_population:
-            # Auto-select top 25% of population
             n_select = max(1, len(current_population) // 4)
             auto_selected = list(range(n_select))
             new_state, status, images = submit_selection(auto_selected, prompt)
-            gen_status, new_images = run_single_generation()
-            return [], gen_status, new_images
-        return [], "No population to evolve", []
+            if "Cannot submit" not in status:
+                gen_status, new_images = run_single_generation()
+                stats_img = update_statistics_if_data()
+                return [], gen_status, new_images, current_display_generation, get_generation_history_table(), stats_img
+        return [], "No population to evolve", [], current_display_generation, get_generation_history_table(), None
     
     auto_run_button.click(
         fn=handle_auto_run,
         inputs=[text_prompt_input],
-        outputs=[gallery_state, gen_status, gallery]
+        outputs=[gallery_state, gen_status, gallery, current_gen_display, history_table, stats_plot]
+    )
+    
+    # Manual refresh button functionality (moved to statistics tab)
+    def refresh_detailed_statistics():
+        """Refresh the detailed statistics display"""
+        return update_statistics_if_data()
+    
+    refresh_stats_button.click(
+        fn=refresh_detailed_statistics,
+        outputs=[stats_plot]
+    )
+    
+    # Navigation event handlers - Fixed to properly update ALL components including stats
+    def handle_back_generation():
+        """Handle back button with proper image and generation display updates"""
+        images, status, selection_status_text, gen_display = go_back_generation()
+        stats_img = update_statistics_if_data()
+        return images, status, selection_status_text, gen_display, get_generation_history_table(), stats_img
+    
+    def handle_forward_generation():
+        """Handle forward button with proper image and generation display updates"""
+        images, status, selection_status_text, gen_display = go_forward_generation()
+        stats_img = update_statistics_if_data()
+        return images, status, selection_status_text, gen_display, get_generation_history_table(), stats_img
+    
+    def handle_current_generation():
+        """Handle current button with proper image and generation display updates"""
+        images, status, selection_status_text, gen_display = go_to_current_generation()
+        stats_img = update_statistics_if_data()
+        return images, status, selection_status_text, gen_display, get_generation_history_table(), stats_img
+    
+    back_button.click(
+        fn=handle_back_generation,
+        outputs=[gallery, gen_status, selection_status, current_gen_display, history_table, stats_plot]
+    )
+    
+    forward_button.click(
+        fn=handle_forward_generation,
+        outputs=[gallery, gen_status, selection_status, current_gen_display, history_table, stats_plot]
+    )
+    
+    current_button.click(
+        fn=handle_current_generation,
+        outputs=[gallery, gen_status, selection_status, current_gen_display, history_table, stats_plot]
     )
 
 # Command-line interface support
@@ -629,4 +1189,4 @@ if __name__ == "__main__":
         # For now, just set defaults and launch GUI
         
     # Launch Gradio interface
-    demo.launch(share=True, server_name="0.0.0.0", server_port=7860)
+    demo.launch(share=False, server_name="localhost", server_port=7860)
