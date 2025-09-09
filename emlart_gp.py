@@ -890,7 +890,7 @@ with gr.Blocks(title="Interactive Evolutionary Art", css="""
                     info="Higher resolution = better quality, slower processing"
                 )
                 seed_input = gr.Number(
-                    value=42, 
+                    value=1, 
                     label="🎲 Random Seed (optional)",
                     info="Use same seed for reproducible results"
                 )
@@ -929,7 +929,7 @@ with gr.Blocks(title="Interactive Evolutionary Art", css="""
                     interactive=False
                 )
         
-        # Main content area - images on left, generation history on right
+        # Main content area 
         with gr.Row():
             # Evolution panel (left side)
             with gr.Column(scale=3):
@@ -957,7 +957,7 @@ with gr.Blocks(title="Interactive Evolutionary Art", css="""
                     elem_classes=["status-box"]
                 )
                 
-                # Action buttons (both in same row)
+                # Action buttons 
                 gr.HTML('<div class="section-header">⚡ Evolution Actions</div>')
                 with gr.Row():
                     submit_button = gr.Button(
@@ -971,7 +971,7 @@ with gr.Blocks(title="Interactive Evolutionary Art", css="""
                         scale=1
                     )
             
-            # Generation History panel (right side) - WITH NAVIGATION
+            # Generation History panel 
             with gr.Column(scale=2):
                 gr.HTML('<div class="section-header">📊 Generation History</div>')
                 with gr.Group(elem_classes=["history-panel"]):
@@ -983,7 +983,7 @@ with gr.Blocks(title="Interactive Evolutionary Art", css="""
                         show_label=False
                     )
                 
-                # Navigation controls (under the history table)
+                # Navigation controls
                 gr.HTML('<div class="section-header">🧭 Navigation Controls</div>')
                 with gr.Column():
                     back_button = gr.Button(
@@ -1125,7 +1125,7 @@ with gr.Blocks(title="Interactive Evolutionary Art", css="""
         outputs=[gallery_state, gen_status, gallery, current_gen_display, history_table, stats_plot]
     )
     
-    # Manual refresh button functionality (moved to statistics tab)
+    # Manual refresh button functionality 
     def refresh_detailed_statistics():
         """Refresh the detailed statistics display"""
         return update_statistics_if_data()
@@ -1135,7 +1135,7 @@ with gr.Blocks(title="Interactive Evolutionary Art", css="""
         outputs=[stats_plot]
     )
     
-    # Navigation event handlers - Fixed to properly update ALL components including stats
+    # Navigation event handlers 
     def handle_back_generation():
         """Handle back button with proper image and generation display updates"""
         images, status, selection_status_text, gen_display = go_back_generation()
