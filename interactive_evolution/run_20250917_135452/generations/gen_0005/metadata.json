@@ -1,0 +1,84 @@
+{
+  "generation": 5,
+  "population_size": 9,
+  "selected_indices": [
+    6,
+    3,
+    1
+  ],
+  "text_prompt": "",
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "frac(x)",
+      "fitness": 0.004896484289043491,
+      "depth": 1,
+      "nodes": 2,
+      "selected": false
+    },
+    {
+      "index": 1,
+      "expression": "tan(_or(x, y))",
+      "fitness": 0.008745865335538871,
+      "depth": 2,
+      "nodes": 4,
+      "selected": true
+    },
+    {
+      "index": 2,
+      "expression": "tan(frac(pow(x, z)))",
+      "fitness": 1.0087622844465967,
+      "depth": 3,
+      "nodes": 5,
+      "selected": false
+    },
+    {
+      "index": 3,
+      "expression": "frac(x)",
+      "fitness": 0.00965826153205025,
+      "depth": 1,
+      "nodes": 2,
+      "selected": true
+    },
+    {
+      "index": 4,
+      "expression": "tan(frac(add(min(abs(sqrt(max(mdist(scalar(0.5738941404824134), x), mdist(scalar(0.2908733646015871), scalar(0.9189557047137766))))), _if(z, z, warp(max(sin(x), neg(z)), scalar(0.4263003974360111), tan(z), min(y, exp(x))))), neg(sin(tan(z))))))",
+      "fitness": 0.004624606090311906,
+      "depth": 8,
+      "nodes": 33,
+      "selected": false
+    },
+    {
+      "index": 5,
+      "expression": "frac(scalar(0.7050427946603182))",
+      "fitness": 0.008996842308053078,
+      "depth": 1,
+      "nodes": 2,
+      "selected": false
+    },
+    {
+      "index": 6,
+      "expression": "pow(x, x)",
+      "fitness": 0.002456242378050527,
+      "depth": 1,
+      "nodes": 3,
+      "selected": true
+    },
+    {
+      "index": 7,
+      "expression": "neg(x)",
+      "fitness": 0.0016135190743198646,
+      "depth": 1,
+      "nodes": 2,
+      "selected": false
+    },
+    {
+      "index": 8,
+      "expression": "tan(frac(y))",
+      "fitness": 1.0058272374057542,
+      "depth": 2,
+      "nodes": 3,
+      "selected": false
+    }
+  ]
+}

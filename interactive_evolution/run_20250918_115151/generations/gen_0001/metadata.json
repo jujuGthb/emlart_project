@@ -1,0 +1,173 @@
+{
+  "generation": 1,
+  "population_size": 20,
+  "selected_indices": [
+    5,
+    8,
+    11,
+    10
+  ],
+  "text_prompt": "",
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "sub(max(z, scalar(-0.4235928590440301)), _if(scalar(-0.913523061855503), scalar(-0.4391335767675626), y))",
+      "fitness": 1.0046261533611855,
+      "depth": 2,
+      "nodes": 8,
+      "selected": false
+    },
+    {
+      "index": 1,
+      "expression": "_if(scalar(-0.04224321015220478), scalar(0.09880369779400588), scalar(-0.8823058870147442))",
+      "fitness": 1.0043487227606356,
+      "depth": 1,
+      "nodes": 4,
+      "selected": false
+    },
+    {
+      "index": 2,
+      "expression": "log(scalar(0.2539512048262602))",
+      "fitness": 1.0037537461776538,
+      "depth": 1,
+      "nodes": 2,
+      "selected": false
+    },
+    {
+      "index": 3,
+      "expression": "pow(mdist(_and(mdist(xor(x, z), min(x, y)), tan(add(scalar(0.5631747186439904), z))), sin(sin(_and(z, scalar(0.7812228014026295))))), abs(div(_if(min(y, z), add(scalar(-0.872159112184629), z), max(z, y)), scalar(0.8636660273632937))))",
+      "fitness": 0.00879112757118459,
+      "depth": 5,
+      "nodes": 32,
+      "selected": false
+    },
+    {
+      "index": 4,
+      "expression": "pow(mdist(log(sqrt(abs(x))), warp(max(cos(y), tan(scalar(-0.5091176418784729))), max(min(scalar(0.7278983537361108), scalar(0.815274183649906)), sqrt(y)), sub(max(z, z), tan(scalar(0.542084285573484))), min(xor(scalar(0.21124157524016884), z), exp(scalar(-0.6050257447960605))))), min(xor(tan(_and(scalar(0.8085708197902981), scalar(-0.6507544174703936))), abs(tan(scalar(0.6595478965149548)))), min(cos(exp(scalar(0.32201520463622324))), _and(cos(scalar(0.7726523540199053)), _if(z, scalar(-0.18777717827203277), y)))))",
+      "fitness": 0.008442564015145685,
+      "depth": 5,
+      "nodes": 50,
+      "selected": false
+    },
+    {
+      "index": 5,
+      "expression": "xor(abs(mdist(z, scalar(0.24102094292705822))), max(_or(scalar(0.19761933329423687), scalar(-0.27335032753948596)), min(y, z)))",
+      "fitness": 0.008077754934131431,
+      "depth": 3,
+      "nodes": 12,
+      "selected": true
+    },
+    {
+      "index": 6,
+      "expression": "_if(scalar(-0.04224321015220478), mdist(add(mult(x, mult(warp(_and(z, y), neg(y), cos(scalar(0.26099618458355023)), sin(scalar(0.8926045531862872))), warp(sub(scalar(0.1272670378102001), y), cos(scalar(0.8708590109983787)), mult(x, z), sqrt(z)))), max(z, y)), frac(frac(scalar(0.05601967738835478)))), scalar(-0.8823058870147442))",
+      "fitness": 0.008607346322312151,
+      "depth": 7,
+      "nodes": 35,
+      "selected": false
+    },
+    {
+      "index": 7,
+      "expression": "_if(scalar(-0.04224321015220478), _if(scalar(0.09880369779400588), x, scalar(-0.5781501652484289)), scalar(-0.8823058870147442))",
+      "fitness": 0.005222074600398323,
+      "depth": 2,
+      "nodes": 7,
+      "selected": false
+    },
+    {
+      "index": 8,
+      "expression": "sub(max(z, min(z, scalar(-0.4235928590440301))), _if(scalar(-0.913523061855503), scalar(-0.4391335767675626), y))",
+      "fitness": 0.00036315394785098266,
+      "depth": 3,
+      "nodes": 10,
+      "selected": true
+    },
+    {
+      "index": 9,
+      "expression": "log(sin(scalar(0.2539512048262602)))",
+      "fitness": 0.006541407439992104,
+      "depth": 2,
+      "nodes": 3,
+      "selected": false
+    },
+    {
+      "index": 10,
+      "expression": "pow(mdist(sqrt(_and(mdist(xor(x, z), min(x, y)), tan(add(scalar(0.5631747186439904), z)))), sin(sin(_and(z, scalar(0.7812228014026295))))), abs(div(_if(min(y, z), add(scalar(-0.872159112184629), z), max(z, y)), scalar(0.8636660273632937))))",
+      "fitness": 0.0013217393056817262,
+      "depth": 6,
+      "nodes": 33,
+      "selected": true
+    },
+    {
+      "index": 11,
+      "expression": "pow(mdist(_and(mdist(xor(x, z), min(x, y)), tan(add(scalar(0.5631747186439904), z))), sin(sin(_and(z, scalar(0.7812228014026295))))), abs(div(_if(min(y, z), add(scalar(-0.872159112184629), z), max(z, y)), scalar(0.8636660273632937))))",
+      "fitness": 0.007243002759813242,
+      "depth": 5,
+      "nodes": 32,
+      "selected": true
+    },
+    {
+      "index": 12,
+      "expression": "sub(scalar(-0.4235928590440301), _if(scalar(-0.913523061855503), scalar(-0.4391335767675626), y))",
+      "fitness": 1.0070131802895517,
+      "depth": 2,
+      "nodes": 6,
+      "selected": false
+    },
+    {
+      "index": 13,
+      "expression": "warp(_and(y, z), _if(scalar(-0.8213075854692193), z, x), scalar(0.6628814328332489), x)",
+      "fitness": 0.0044324391121743755,
+      "depth": 2,
+      "nodes": 10,
+      "selected": false
+    },
+    {
+      "index": 14,
+      "expression": "scalar(0.2539512048262602)",
+      "fitness": 0.006636805372239242,
+      "depth": 0,
+      "nodes": 1,
+      "selected": false
+    },
+    {
+      "index": 15,
+      "expression": "scalar(0.09880369779400588)",
+      "fitness": 0.0030941448343020563,
+      "depth": 0,
+      "nodes": 1,
+      "selected": false
+    },
+    {
+      "index": 16,
+      "expression": "pow(mdist(log(sqrt(abs(x))), warp(max(cos(y), tan(scalar(-0.5091176418784729))), max(min(scalar(0.7278983537361108), scalar(0.815274183649906)), sqrt(y)), sub(max(z, z), tan(scalar(0.542084285573484))), min(xor(scalar(0.21124157524016884), z), exp(scalar(-0.6050257447960605))))), min(xor(tan(_and(scalar(0.8085708197902981), scalar(-0.6507544174703936))), abs(tan(scalar(0.6595478965149548)))), min(cos(exp(scalar(0.32201520463622324))), _and(cos(scalar(0.7726523540199053)), _if(z, scalar(-0.18777717827203277), y)))))",
+      "fitness": 1.0044408529314166,
+      "depth": 5,
+      "nodes": 50,
+      "selected": false
+    },
+    {
+      "index": 17,
+      "expression": "pow(mdist(_and(mdist(xor(x, z), min(x, y)), tan(add(scalar(0.3845083345928264), z))), sin(sin(_and(z, scalar(0.7812228014026295))))), abs(div(_if(min(y, z), add(scalar(-0.872159112184629), z), max(z, y)), scalar(0.8636660273632937))))",
+      "fitness": 0.004040502958583249,
+      "depth": 5,
+      "nodes": 32,
+      "selected": false
+    },
+    {
+      "index": 18,
+      "expression": "xor(abs(mdist(z, scalar(0.24102094292705822))), max(scalar(-0.27335032753948596), min(y, z)))",
+      "fitness": 1.0090392801979642,
+      "depth": 3,
+      "nodes": 10,
+      "selected": false
+    },
+    {
+      "index": 19,
+      "expression": "pow(mdist(log(sqrt(abs(x))), warp(max(cos(y), tan(scalar(-0.5091176418784729))), max(min(scalar(0.7278983537361108), scalar(0.815274183649906)), sqrt(y)), sub(max(z, z), tan(scalar(0.542084285573484))), min(xor(scalar(0.21124157524016884), z), exp(scalar(-0.6050257447960605))))), min(_and(x, xor(tan(_and(scalar(0.8085708197902981), scalar(-0.6507544174703936))), abs(tan(scalar(0.6595478965149548))))), min(cos(exp(scalar(0.32201520463622324))), _and(cos(scalar(0.7726523540199053)), _if(z, scalar(-0.18777717827203277), y)))))",
+      "fitness": 0.004237059660112645,
+      "depth": 6,
+      "nodes": 52,
+      "selected": false
+    }
+  ]
+}

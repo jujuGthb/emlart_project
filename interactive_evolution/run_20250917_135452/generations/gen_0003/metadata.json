@@ -1,0 +1,84 @@
+{
+  "generation": 3,
+  "population_size": 9,
+  "selected_indices": [
+    7,
+    8,
+    1
+  ],
+  "text_prompt": "",
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "x",
+      "fitness": 0.007400951943673607,
+      "depth": 0,
+      "nodes": 1,
+      "selected": false
+    },
+    {
+      "index": 1,
+      "expression": "tan(y)",
+      "fitness": 0.00615048603970563,
+      "depth": 1,
+      "nodes": 2,
+      "selected": true
+    },
+    {
+      "index": 2,
+      "expression": "neg(tan(warp(scalar(0.9595098546214651), y, x, scalar(-0.5577358221594166))))",
+      "fitness": 0.009680701266169418,
+      "depth": 3,
+      "nodes": 7,
+      "selected": false
+    },
+    {
+      "index": 3,
+      "expression": "tan(_if(scalar(0.437815218967716), x, scalar(-0.6433932747677067)))",
+      "fitness": 0.002210959605121071,
+      "depth": 2,
+      "nodes": 5,
+      "selected": false
+    },
+    {
+      "index": 4,
+      "expression": "neg(exp(tan(sub(add(_or(z, abs(max(mdist(z, z), neg(z)))), warp(_or(sin(div(x, scalar(-0.15164399540222773))), add(mult(scalar(0.5020268063198967), scalar(-0.8199373357542818)), scalar(0.5630796905254278))), pow(mult(cos(scalar(-0.7034793791448539)), log(scalar(0.5723140580526724))), neg(scalar(-0.45264981041099617))), pow(pow(mult(x, scalar(-0.7007933224852627)), cos(scalar(0.9043371245108895))), exp(_and(scalar(-0.898255161202014), scalar(-0.9059304155989678)))), cos(xor(xor(y, x), add(z, y))))), scalar(-0.004077242239142187)))))",
+      "fitness": 0.003883258367517306,
+      "depth": 9,
+      "nodes": 53,
+      "selected": false
+    },
+    {
+      "index": 5,
+      "expression": "tan(scalar(0.41572438496611785))",
+      "fitness": 1.0060673234801547,
+      "depth": 1,
+      "nodes": 2,
+      "selected": false
+    },
+    {
+      "index": 6,
+      "expression": "x",
+      "fitness": 1.0037249286471184,
+      "depth": 0,
+      "nodes": 1,
+      "selected": false
+    },
+    {
+      "index": 7,
+      "expression": "div(z, scalar(0.1288936664803948))",
+      "fitness": 1.008513706647989,
+      "depth": 1,
+      "nodes": 3,
+      "selected": true
+    },
+    {
+      "index": 8,
+      "expression": "x",
+      "fitness": 0.0049798804669679364,
+      "depth": 0,
+      "nodes": 1,
+      "selected": true
+    }
+  ]
+}

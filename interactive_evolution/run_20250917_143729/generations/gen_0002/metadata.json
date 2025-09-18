@@ -1,0 +1,43 @@
+{
+  "generation": 2,
+  "population_size": 4,
+  "selected_indices": [
+    2,
+    0
+  ],
+  "text_prompt": "",
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "sin(_or(pow(sqrt(_and(scalar(-0.08828402889725107), tan(sqrt(pow(log(scalar(-0.2790728348289615)), _and(_or(scalar(-0.32223242609598457), scalar(-0.9178954910152941)), z)))))), _or(x, scalar(0.8443771249397749))), cos(exp(z))))",
+      "fitness": 1.0090477650120184,
+      "depth": 10,
+      "nodes": 22,
+      "selected": true
+    },
+    {
+      "index": 1,
+      "expression": "sin(_or(pow(sqrt(scalar(-0.5624379253246228)), _or(x, scalar(0.8443771249397749))), cos(exp(div(y, x)))))",
+      "fitness": 1.0008257842709816,
+      "depth": 5,
+      "nodes": 13,
+      "selected": false
+    },
+    {
+      "index": 2,
+      "expression": "sin(_or(div(pow(sqrt(scalar(-0.5624379253246228)), _or(x, scalar(0.8443771249397749))), z), cos(exp(z))))",
+      "fitness": 1.000228035516484,
+      "depth": 5,
+      "nodes": 13,
+      "selected": true
+    },
+    {
+      "index": 3,
+      "expression": "sin(_or(_or(x, scalar(0.8443771249397749)), cos(exp(z))))",
+      "fitness": 1.0021215678318487,
+      "depth": 4,
+      "nodes": 8,
+      "selected": false
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "generation": 4,
+  "population_size": 4,
+  "selected_indices": [
+    0,
+    3
+  ],
+  "text_prompt": "",
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "cos(mdist(scalar(-0.98159012289123), pow(z, mult(y, z))))",
+      "fitness": 0.002959361073215152,
+      "depth": 4,
+      "nodes": 8,
+      "selected": true
+    },
+    {
+      "index": 1,
+      "expression": "cos(mdist(scalar(-0.98159012289123), mult(mdist(exp(scalar(-0.7331848903476259)), z), z)))",
+      "fitness": 1.0055385985871443,
+      "depth": 5,
+      "nodes": 9,
+      "selected": false
+    },
+    {
+      "index": 2,
+      "expression": "cos(mdist(scalar(-0.98159012289123), z))",
+      "fitness": 1.002644463999069,
+      "depth": 2,
+      "nodes": 4,
+      "selected": false
+    },
+    {
+      "index": 3,
+      "expression": "cos(mdist(scalar(-0.98159012289123), mult(z, z)))",
+      "fitness": 0.0041089921210621565,
+      "depth": 3,
+      "nodes": 6,
+      "selected": true
+    }
+  ]
+}

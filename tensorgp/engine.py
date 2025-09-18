@@ -1867,7 +1867,7 @@ class Engine:
         return json.dumps(self, default=default_json, cls=NumpyEncoder, sort_keys=True, indent=4)
         # return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
-    def get_terminals(self, node):
+    def get_terminals(self, node): 
         candidates = Counter()
         if node.terminal:
             candidates.update([node])

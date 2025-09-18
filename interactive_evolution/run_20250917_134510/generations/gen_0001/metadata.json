@@ -1,0 +1,76 @@
+{
+  "generation": 1,
+  "population_size": 8,
+  "selected_indices": [
+    5,
+    7,
+    1
+  ],
+  "text_prompt": "",
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "log(xor(sqrt(tan(abs(scalar(0.9092926068034703)))), sin(div(sin(x), sqrt(y)))))",
+      "fitness": 0.005346303423579918,
+      "depth": 5,
+      "nodes": 12,
+      "selected": false
+    },
+    {
+      "index": 1,
+      "expression": "log(xor(sqrt(sqrt(tan(abs(scalar(0.9092926068034703))))), sin(div(sin(x), neg(y)))))",
+      "fitness": 0.00697805064573635,
+      "depth": 6,
+      "nodes": 13,
+      "selected": true
+    },
+    {
+      "index": 2,
+      "expression": "sub(sub(min(abs(tan(y)), abs(warp(scalar(0.7220177217066497), y, scalar(-0.859093053888766), y))), y), x)",
+      "fitness": 0.007260921085537603,
+      "depth": 5,
+      "nodes": 14,
+      "selected": false
+    },
+    {
+      "index": 3,
+      "expression": "log(xor(sqrt(frac(sub(mdist(log(mult(min(z, z), add(scalar(0.8219755670161357), scalar(0.20041766026449914)))), min(cos(tan(z)), div(cos(scalar(-0.23953952094661668)), div(y, scalar(0.8523308840101902))))), z))), sin(div(sin(x), neg(y)))))",
+      "fitness": 0.0028084112515899895,
+      "depth": 9,
+      "nodes": 31,
+      "selected": false
+    },
+    {
+      "index": 4,
+      "expression": "log(max(x, add(z, cos(xor(cos(mult(z, y)), pow(frac(x), y))))))",
+      "fitness": 1.006438460832508,
+      "depth": 7,
+      "nodes": 15,
+      "selected": false
+    },
+    {
+      "index": 5,
+      "expression": "log(xor(sqrt(tan(abs(sqrt(scalar(0.9092926068034703))))), sin(div(sin(x), neg(y)))))",
+      "fitness": 2.9053409016643882e-05,
+      "depth": 6,
+      "nodes": 13,
+      "selected": true
+    },
+    {
+      "index": 6,
+      "expression": "frac(max(mult(x, scalar(-0.19142381229528804)), xor(exp(scalar(0.5516752999199304)), min(scalar(-0.7841374758118003), scalar(-0.25895466670850653)))))",
+      "fitness": 1.0032635513678503,
+      "depth": 4,
+      "nodes": 11,
+      "selected": false
+    },
+    {
+      "index": 7,
+      "expression": "log(xor(sqrt(tan(abs(scalar(0.9092926068034703)))), sin(div(x, neg(y)))))",
+      "fitness": 0.005261190981653139,
+      "depth": 5,
+      "nodes": 11,
+      "selected": true
+    }
+  ]
+}

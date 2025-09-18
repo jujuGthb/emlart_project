@@ -1,0 +1,92 @@
+{
+  "generation": 0,
+  "population_size": 10,
+  "selected_indices": [
+    5,
+    4,
+    8
+  ],
+  "text_prompt": "",
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "x",
+      "fitness": 0.00814870269510069,
+      "depth": 0,
+      "nodes": 1,
+      "selected": false
+    },
+    {
+      "index": 1,
+      "expression": "pow(pow(x, scalar(0.6715302078397394)), abs(y))",
+      "fitness": 1.0046058458485918,
+      "depth": 2,
+      "nodes": 6,
+      "selected": false
+    },
+    {
+      "index": 2,
+      "expression": "_if(sub(cos(x), abs(scalar(0.8782983255570211))), mult(xor(scalar(-0.9419184248502641), scalar(-0.008375517236298702)), _if(scalar(0.5218954750836411), x, scalar(0.8443771249397749))), cos(exp(z)))",
+      "fitness": 0.0005951269038407603,
+      "depth": 3,
+      "nodes": 17,
+      "selected": false
+    },
+    {
+      "index": 3,
+      "expression": "cos(sin(neg(z)))",
+      "fitness": 1.0081751633059097,
+      "depth": 3,
+      "nodes": 4,
+      "selected": false
+    },
+    {
+      "index": 4,
+      "expression": "frac(max(max(sub(y, z), mult(x, scalar(-0.19142381229528804))), xor(exp(scalar(0.5516752999199304)), min(scalar(-0.7841374758118003), scalar(-0.25895466670850653)))))",
+      "fitness": 0.001937212087844349,
+      "depth": 4,
+      "nodes": 15,
+      "selected": true
+    },
+    {
+      "index": 5,
+      "expression": "pow(z, mult(exp(abs(z)), sqrt(sin(scalar(-0.2934516748915357)))))",
+      "fitness": 0.00877145007346189,
+      "depth": 4,
+      "nodes": 9,
+      "selected": true
+    },
+    {
+      "index": 6,
+      "expression": "log(xor(sqrt(tan(abs(scalar(0.9092926068034703)))), sin(div(sin(x), neg(y)))))",
+      "fitness": 0.007306006956205084,
+      "depth": 5,
+      "nodes": 12,
+      "selected": false
+    },
+    {
+      "index": 7,
+      "expression": "sub(sin(min(abs(tan(y)), abs(warp(scalar(0.7220177217066497), y, scalar(-0.859093053888766), y)))), x)",
+      "fitness": 0.003249424542875338,
+      "depth": 5,
+      "nodes": 13,
+      "selected": false
+    },
+    {
+      "index": 8,
+      "expression": "log(cos(tan(exp(min(max(scalar(0.05476079809602563), scalar(0.42317985437054584)), _or(y, scalar(-0.22688579047706026)))))))",
+      "fitness": 0.00600386709618772,
+      "depth": 6,
+      "nodes": 11,
+      "selected": true
+    },
+    {
+      "index": 9,
+      "expression": "neg(log(z))",
+      "fitness": 0.0010242646883503658,
+      "depth": 2,
+      "nodes": 3,
+      "selected": false
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "generation": 0,
+  "population_size": 8,
+  "selected_indices": [
+    6,
+    4,
+    7
+  ],
+  "text_prompt": "",
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "x",
+      "fitness": 0.00960924167914693,
+      "depth": 0,
+      "nodes": 1,
+      "selected": false
+    },
+    {
+      "index": 1,
+      "expression": "pow(pow(x, scalar(0.6715302078397394)), abs(y))",
+      "fitness": 0.006263157819899192,
+      "depth": 2,
+      "nodes": 6,
+      "selected": false
+    },
+    {
+      "index": 2,
+      "expression": "_if(cos(abs(scalar(-0.98159012289123))), xor(neg(z), _or(z, scalar(-0.5624379253246228))), max(neg(z), cos(scalar(0.7198930575905798))))",
+      "fitness": 1.002419294616383,
+      "depth": 3,
+      "nodes": 15,
+      "selected": false
+    },
+    {
+      "index": 3,
+      "expression": "scalar(0.4223835393905593)",
+      "fitness": 0.009008812081749343,
+      "depth": 0,
+      "nodes": 1,
+      "selected": false
+    },
+    {
+      "index": 4,
+      "expression": "neg(sin(xor(frac(max(scalar(-0.0012758844167379824), y)), sub(add(scalar(-0.19142381229528804), y), sqrt(z)))))",
+      "fitness": 1.0037647120799669,
+      "depth": 5,
+      "nodes": 13,
+      "selected": true
+    },
+    {
+      "index": 5,
+      "expression": "_and(sin(scalar(-0.25895466670850653)), pow(z, mult(exp(abs(z)), sqrt(sin(scalar(-0.2934516748915357))))))",
+      "fitness": 0.002464338267698264,
+      "depth": 5,
+      "nodes": 12,
+      "selected": false
+    },
+    {
+      "index": 6,
+      "expression": "log(xor(sqrt(tan(abs(mult(z, x)))), sin(sqrt(frac(neg(y))))))",
+      "fitness": 0.00015674934644522854,
+      "depth": 6,
+      "nodes": 13,
+      "selected": true
+    },
+    {
+      "index": 7,
+      "expression": "min(frac(neg(min(abs(tan(y)), abs(warp(scalar(0.7220177217066497), y, scalar(-0.859093053888766), y))))), x)",
+      "fitness": 0.006591791981252183,
+      "depth": 6,
+      "nodes": 14,
+      "selected": true
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "generation": 3,
+  "population_size": 8,
+  "selected_indices": [
+    4,
+    3,
+    1,
+    5
+  ],
+  "text_prompt": "",
+  "individuals": [
+    {
+      "index": 0,
+      "expression": "frac(max(scalar(-0.19142381229528804), xor(exp(scalar(0.5516752999199304)), min(scalar(-0.7841374758118003), scalar(-0.25895466670850653)))))",
+      "fitness": 0.008804375096611519,
+      "depth": 4,
+      "nodes": 9,
+      "selected": false
+    },
+    {
+      "index": 1,
+      "expression": "max(x, add(z, cos(xor(cos(mult(z, y)), frac(x)))))",
+      "fitness": 0.003130999980127883,
+      "depth": 6,
+      "nodes": 12,
+      "selected": true
+    },
+    {
+      "index": 2,
+      "expression": "frac(max(mult(x, scalar(-0.19142381229528804)), xor(exp(cos(scalar(0.5516752999199304))), min(scalar(-0.7841374758118003), scalar(-0.25895466670850653)))))",
+      "fitness": 0.009130765046459455,
+      "depth": 5,
+      "nodes": 12,
+      "selected": false
+    },
+    {
+      "index": 3,
+      "expression": "max(x, add(z, cos(xor(mult(z, y), pow(frac(x), y)))))",
+      "fitness": 1.000084753006641,
+      "depth": 6,
+      "nodes": 13,
+      "selected": true
+    },
+    {
+      "index": 4,
+      "expression": "log(max(x, add(z, cos(xor(cos(mult(x, scalar(-0.7841374758118003))), pow(frac(x), y))))))",
+      "fitness": 0.0032246032310169837,
+      "depth": 7,
+      "nodes": 15,
+      "selected": true
+    },
+    {
+      "index": 5,
+      "expression": "max(x, add(z, cos(xor(cos(mult(z, y)), pow(frac(x), y)))))",
+      "fitness": 1.00301541036039,
+      "depth": 6,
+      "nodes": 14,
+      "selected": true
+    },
+    {
+      "index": 6,
+      "expression": "frac(max(mult(x, scalar(-0.19142381229528804)), xor(warp(x, z, scalar(0.5965947316291931), exp(scalar(0.5516752999199304))), min(scalar(-0.7841374758118003), scalar(-0.25895466670850653)))))",
+      "fitness": 0.0017734926504294835,
+      "depth": 5,
+      "nodes": 15,
+      "selected": false
+    },
+    {
+      "index": 7,
+      "expression": "max(x, log(sub(min(scalar(0.42048811832259725), scalar(-0.44840881817051903)), sin(mdist(_and(sin(y), add(scalar(0.42687399679968197), y)), _if(mult(scalar(0.7334357293009992), scalar(0.9275768341116641)), xor(scalar(0.2449041217952732), scalar(0.5231859870020521)), frac(scalar(0.7421062584675822))))))))",
+      "fitness": 1.0087998217015757,
+      "depth": 7,
+      "nodes": 24,
+      "selected": false
+    }
+  ]
+}

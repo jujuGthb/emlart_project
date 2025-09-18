@@ -347,9 +347,12 @@ def submit_selection(gallery_state, text_prompt):
 
 def initialize_evolution(pop_size, num_gens, resolution, seed, text_prompt):
     """Initialize the evolutionary engine"""
-    global current_engine, current_generation, work_directory, current_text_prompt, current_display_generation
+    global current_engine, current_generation, work_directory, current_text_prompt, current_display_generation, stats_data, generation_history
     
-    # Store the text prompt globally
+    # Clear previous evolution data
+    stats_data = []  
+    generation_history = {} 
+    
     current_text_prompt = text_prompt
     
     # Initialize CLIP if available and prompt provided
@@ -476,15 +479,14 @@ def initialize_evolution(pop_size, num_gens, resolution, seed, text_prompt):
             status_msg += f"\nBasic text guidance: '{text_prompt}'"
     
     return status_msg, get_current_images()
-
 def run_single_generation():
     """Run a single generation of evolution"""
-    global current_engine, selected_indices
+    global current_engine, selected_indices, current_tensors, current_population
     
     if current_engine is None or not current_engine.condition():
         return "Evolution complete or not initialized", []
     
-    # Create new population
+    # Create new population from elite
     new_population = current_engine.get_n_best_from_pop(
         population=current_engine.population, 
         n=current_engine.elitism
@@ -500,17 +502,28 @@ def run_single_generation():
                           nodes=member_nodes, valid=False, parents=plist)
         )
     
-    # Evaluate new population
+    # Evaluate offspring only (elite already has fitness)
     if len(temp_population) > 0:
         temp_population, _ = current_engine.fitness_func_wrap(
             population=temp_population, 
             f_path=current_engine.experiment.current_directory
         )
     
-    new_population += temp_population
-    current_engine.population = new_population
+    # Combine elite + offspring for the complete new population
+    complete_population = new_population + temp_population
+    current_engine.population = complete_population
     
-    # Update best
+    # Update current population reference for display
+    current_population = complete_population
+    
+    # Calculate tensors for the COMPLETE population (elite + offspring)
+    with tf.device(device):
+        complete_tensors, _ = current_engine.calculate_tensors(complete_population)
+    
+    # Update global tensors for display
+    current_tensors = complete_tensors
+    
+    # Update best individual
     current_engine.best = current_engine.get_n_best_from_pop(
         population=current_engine.population, n=1
     )[0]
@@ -520,7 +533,8 @@ def run_single_generation():
     
     current_engine.current_generation += 1
     
-    return f"Generation {current_engine.current_generation} complete", get_current_images()
+    status_msg = f"Generation {current_engine.current_generation} complete"
+    return status_msg, get_current_images()
 
 def save_generation_to_history():
     """Save current generation to history for navigation"""
