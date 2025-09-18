@@ -13,7 +13,6 @@ import io
 # Model loading 
 CLIP_AVAILABLE = False
 AESTHETIC_MODEL_AVAILABLE = False
-device = "cuda" if torch.cuda.is_available() else "cpu"  # Default to CUDA
 vit_model = None
 preprocess = None
 aesthetic_model = None
@@ -21,6 +20,7 @@ aesthetic_model = None
 try:
     import torch
     import clip
+    device = "cuda" if torch.cuda.is_available() else "cpu"  # Default to CUDA
     CLIP_AVAILABLE = True
     
     # Try to import LAION aesthetic model 
@@ -31,7 +31,7 @@ try:
         print(f"Full CLIP + LAION aesthetic model loaded successfully on {device}")
     except ImportError:
         # Fallback to just CLIP
-        vit_model, preprocess = clip.load("ViT-L-14", device=device)
+        vit_model, preprocess = clip.load("ViT-L/14", device=device)
         print(f"CLIP loaded successfully on {device} (LAION aesthetic model not available)")
     except Exception as e:
         # If CUDA fails, fallback to CPU
@@ -43,7 +43,7 @@ try:
             AESTHETIC_MODEL_AVAILABLE = True
             print(f"Models loaded successfully on CPU")
         except:
-            vit_model, preprocess = clip.load("ViT-L-14", device=device)
+            vit_model, preprocess = clip.load("ViT-L/14", device=device)
             print(f"CLIP loaded successfully on CPU")
     
 except ImportError:
@@ -131,13 +131,10 @@ def enhanced_fitness_evaluation(**kwargs):
                     
                     # Combined fitness (with user selection weighting)
                     if idx in selected_indices:
-                       
                         fitness = clip_fitness * 1.5 + aesthetic_fitness / 200.0 * 1.5 + 2.0
                     else:
-                        
                         fitness = clip_fitness + aesthetic_fitness / 200.0
                 else:
-                    
                     if idx in selected_indices:
                         fitness = clip_fitness * 1.5 + 1.5
                     else:
@@ -330,7 +327,6 @@ def run_single_generation():
     if current_engine is None or not current_engine.condition():
         return "Evolution complete or not initialized", []
     
-  
     # Get elite individuals
     new_population = current_engine.get_n_best_from_pop(
         population=current_engine.population, 
@@ -340,7 +336,6 @@ def run_single_generation():
     # Generate offspring 
     temp_population = []
     for _ in range(current_engine.population_size - current_engine.elitism):
-       
         indiv_temp, parent, plist = current_engine.selection()
         member_depth, member_nodes = indiv_temp.get_depth()
         
@@ -451,6 +446,148 @@ def save_generation_to_history():
             len(selected_indices)
         ])
 
+def navigate_to_generation(target_gen):
+    """Navigate to a specific generation"""
+    global current_display_generation, navigation_enabled, current_tensors
+    
+    if target_gen in generation_history:
+        current_display_generation = target_gen
+        navigation_enabled = True
+        
+        # Update current_tensors to show historical images
+        stored_tensors = generation_history[target_gen]['tensors']
+        current_tensors = [tf.convert_to_tensor(tensor_array) for tensor_array in stored_tensors]
+        
+        # Get images from history
+        images = []
+        for i, tensor_array in enumerate(stored_tensors):
+            img_array = np.clip(tensor_array, 0, 255).astype(np.uint8)
+            if len(img_array.shape) == 2:
+                img = Image.fromarray(img_array, mode='L')
+            else:
+                img = Image.fromarray(img_array)
+            images.append((img, f"Gen {target_gen} - Image {i}"))
+        
+        metadata = generation_history[target_gen]['metadata']
+        status = f"Viewing Generation {target_gen} (Historical)"
+        selection_status = f"Previous selections: {metadata['selected_indices']}"
+        
+        return images, status, selection_status, target_gen
+    else:
+        return [], f"Generation {target_gen} not found in history", "Selected: []", current_display_generation
+
+def go_back_generation():
+    """Navigate to previous generation"""
+    global current_display_generation
+    
+    available_gens = sorted(generation_history.keys())
+    if available_gens:
+        current_idx = available_gens.index(current_display_generation) if current_display_generation in available_gens else len(available_gens) - 1
+        if current_idx > 0:
+            return navigate_to_generation(available_gens[current_idx - 1])
+    
+    return get_current_images(), f"Already at earliest generation ({current_display_generation})", "Selected: []", current_display_generation
+
+def go_forward_generation():
+    """Navigate to next generation"""
+    global current_display_generation
+    
+    available_gens = sorted(generation_history.keys())
+    if available_gens:
+        current_idx = available_gens.index(current_display_generation) if current_display_generation in available_gens else 0
+        if current_idx < len(available_gens) - 1:
+            return navigate_to_generation(available_gens[current_idx + 1])
+    
+    return get_current_images(), f"Already at latest generation ({current_display_generation})", "Selected: []", current_display_generation
+
+def go_to_current_generation():
+    """Return to the current active generation"""
+    global navigation_enabled, current_display_generation, current_tensors
+    
+    navigation_enabled = False
+    current_display_generation = current_generation
+    
+    # Restore current generation tensors
+    if current_engine and current_engine.population:
+        with tf.device('/gpu:0'):
+            current_tensors, _ = current_engine.calculate_tensors(current_engine.population)
+    
+    images = get_current_images()
+    status = f"Returned to current generation {current_generation}"
+    selection_status = f"Selected: {selected_indices}"
+    
+    return images, status, selection_status, current_generation
+
+def get_statistics_plot():
+    """Generate statistics plot"""
+    if not stats_data:
+        return None
+    
+    import matplotlib.pyplot as plt
+    
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 8))
+    
+    generations = [row[0] for row in stats_data]
+    fitness_avg = [row[1] for row in stats_data]
+    fitness_std = [row[2] for row in stats_data]
+    fitness_max = [row[3] for row in stats_data]
+    depth_avg = [row[4] for row in stats_data]
+    nodes_avg = [row[5] for row in stats_data]
+    selections = [row[6] for row in stats_data]
+    
+    # Fitness evolution
+    ax1.plot(generations, fitness_avg, label='Average', color='blue')
+    ax1.plot(generations, fitness_max, label='Maximum', color='red')
+    ax1.fill_between(generations, 
+                     [avg - std for avg, std in zip(fitness_avg, fitness_std)],
+                     [avg + std for avg, std in zip(fitness_avg, fitness_std)],
+                     alpha=0.3, color='blue')
+    ax1.set_title('Fitness Evolution')
+    ax1.set_xlabel('Generation')
+    ax1.set_ylabel('Fitness')
+    ax1.legend()
+    ax1.grid(True)
+    
+    # Complexity evolution
+    ax2.plot(generations, depth_avg, label='Avg Depth', color='green')
+    ax2.plot(generations, nodes_avg, label='Avg Nodes', color='orange')
+    ax2.set_title('Complexity Evolution')
+    ax2.set_xlabel('Generation')
+    ax2.set_ylabel('Complexity')
+    ax2.legend()
+    ax2.grid(True)
+    
+    # Selection pressure
+    ax3.bar(generations, selections, alpha=0.7, color='purple')
+    ax3.set_title('Selection Pressure')
+    ax3.set_xlabel('Generation')
+    ax3.set_ylabel('Number of Selected Individuals')
+    ax3.grid(True)
+    
+    # Summary statistics
+    if generations:
+        total_gens = len(generations)
+        avg_fitness_overall = np.mean(fitness_avg)
+        max_fitness_overall = np.max(fitness_max)
+        avg_selections = np.mean(selections)
+        
+        ax4.text(0.1, 0.8, f"Total Generations: {total_gens}", transform=ax4.transAxes, fontsize=12)
+        ax4.text(0.1, 0.6, f"Avg Fitness: {avg_fitness_overall:.3f}", transform=ax4.transAxes, fontsize=12)
+        ax4.text(0.1, 0.4, f"Best Fitness: {max_fitness_overall:.3f}", transform=ax4.transAxes, fontsize=12)
+        ax4.text(0.1, 0.2, f"Avg Selections: {avg_selections:.1f}", transform=ax4.transAxes, fontsize=12)
+        ax4.set_title('Summary Statistics')
+        ax4.axis('off')
+    
+    plt.tight_layout()
+    
+    # Convert to base64 for display
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', dpi=100, bbox_inches='tight')
+    buffer.seek(0)
+    plt.close(fig)
+    
+    return buffer.getvalue()
+
 def get_generation_history_table():
     """Get generation history table data"""
     if not stats_data:
@@ -534,6 +671,63 @@ with gr.Blocks(title="Enhanced Interactive Evolutionary Art") as demo:
                     label="Evolution History",
                     interactive=False
                 )
+                
+                # Navigation controls
+                gr.HTML('<h3>Navigation Controls</h3>')
+                with gr.Column():
+                    back_button = gr.Button(
+                        "⬅️ Previous Generation", 
+                        variant="secondary",
+                        size="sm"
+                    )
+                    current_button = gr.Button(
+                        "🎯 Current Generation", 
+                        variant="primary",
+                        size="sm"
+                    )
+                    forward_button = gr.Button(
+                        "➡️ Next Generation", 
+                        variant="secondary",
+                        size="sm"
+                    )
+    
+    with gr.Tab("📊 Detailed Statistics"):
+        gr.HTML('<h3>Evolution Analytics</h3>')
+        
+        stats_plot = gr.Image(
+            label="📊 Evolution Statistics Plots", 
+            type="pil",
+            show_label=True
+        )
+        
+        gr.HTML('<h3>Detailed Analysis</h3>')
+        gr.Markdown("""
+            ### 📊 Comprehensive Statistical Analysis
+            
+            This tab provides detailed visualizations of the evolutionary process:
+            
+            - **📈 Fitness Evolution:** Track average and maximum fitness over generations
+            - **🧠 Complexity Evolution:** Monitor tree depth and node count trends  
+            - **👆 Selection Pressure:** Visualize user selection patterns
+            - **📋 Summary Statistics:** Overall evolution metrics and trends
+            
+            Statistics update automatically when new generations are created!
+        """)
+        
+        # Refresh button at the bottom of statistics tab
+        refresh_stats_button = gr.Button(
+            "🔄 Refresh Statistics", 
+            variant="primary"
+        )
+    
+    # Helper function for statistics updates
+    def update_statistics_if_data():
+        """Update statistics plot if data exists"""
+        if stats_data:
+            plot_bytes = get_statistics_plot()
+            if plot_bytes:
+                return Image.open(io.BytesIO(plot_bytes))
+        return None
     
     # Event handlers
     init_button.click(
@@ -541,8 +735,8 @@ with gr.Blocks(title="Enhanced Interactive Evolutionary Art") as demo:
         inputs=[pop_size_input, num_gens_input, resolution_input, seed_input, text_prompt_input],
         outputs=[init_status, gallery]
     ).then(
-        fn=lambda: (0, get_generation_history_table()),
-        outputs=[current_gen_display, history_table]
+        fn=lambda: (0, get_generation_history_table(), update_statistics_if_data()),
+        outputs=[current_gen_display, history_table, stats_plot]
     )
     
     gallery.select(
@@ -556,11 +750,55 @@ with gr.Blocks(title="Enhanced Interactive Evolutionary Art") as demo:
         inputs=[gallery_state, text_prompt_input],
         outputs=[gallery_state, gen_status, gallery]
     ).then(
-        fn=lambda: (current_display_generation, get_generation_history_table()),
-        outputs=[current_gen_display, history_table]
+        fn=lambda: (current_display_generation, get_generation_history_table(), update_statistics_if_data()),
+        outputs=[current_gen_display, history_table, stats_plot]
     ).then(
         fn=lambda: ([], "Selected: []"),
         outputs=[gallery_state, selection_status]
+    )
+    
+    # Navigation event handlers 
+    def handle_back_generation():
+        """Handle back button with proper image and generation display updates"""
+        images, status, selection_status_text, gen_display = go_back_generation()
+        stats_img = update_statistics_if_data()
+        return images, status, selection_status_text, gen_display, get_generation_history_table(), stats_img
+    
+    def handle_forward_generation():
+        """Handle forward button with proper image and generation display updates"""
+        images, status, selection_status_text, gen_display = go_forward_generation()
+        stats_img = update_statistics_if_data()
+        return images, status, selection_status_text, gen_display, get_generation_history_table(), stats_img
+    
+    def handle_current_generation():
+        """Handle current button with proper image and generation display updates"""
+        images, status, selection_status_text, gen_display = go_to_current_generation()
+        stats_img = update_statistics_if_data()
+        return images, status, selection_status_text, gen_display, get_generation_history_table(), stats_img
+    
+    back_button.click(
+        fn=handle_back_generation,
+        outputs=[gallery, gen_status, selection_status, current_gen_display, history_table, stats_plot]
+    )
+    
+    forward_button.click(
+        fn=handle_forward_generation,
+        outputs=[gallery, gen_status, selection_status, current_gen_display, history_table, stats_plot]
+    )
+    
+    current_button.click(
+        fn=handle_current_generation,
+        outputs=[gallery, gen_status, selection_status, current_gen_display, history_table, stats_plot]
+    )
+    
+    # Manual refresh button functionality 
+    def refresh_detailed_statistics():
+        """Refresh the detailed statistics display"""
+        return update_statistics_if_data()
+    
+    refresh_stats_button.click(
+        fn=refresh_detailed_statistics,
+        outputs=[stats_plot]
     )
 
 if __name__ == "__main__":
