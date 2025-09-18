@@ -176,7 +176,7 @@ def text_prompt_fitness(tensor, prompt_text):
     # Normalize to 0-1 range
     normalized = grayscale / 255.0
     
-    # Basic prompt-based scoring (very simplified)
+    # Basic prompt-based scoring 
     score = 0.0
     prompt_lower = prompt_text.lower()
     
@@ -194,7 +194,7 @@ def text_prompt_fitness(tensor, prompt_text):
     elif any(word in prompt_lower for word in ['smooth', 'soft', 'blur', 'gentle']):
         score += (1.0 - contrast)
     
-    # Complexity-based keywords
+
     # Calculate edges using simple gradient
     grad_x = np.abs(np.gradient(normalized, axis=1))
     grad_y = np.abs(np.gradient(normalized, axis=0))
@@ -208,7 +208,7 @@ def text_prompt_fitness(tensor, prompt_text):
     # Add small random component to avoid ties
     score += 0.01 * np.random.random()
     
-    return max(0.0, min(1.0, score))  # Clamp to [0,1]
+    return max(0.0, min(1.0, score))  
 
 def user_guided_evaluation(**kwargs):
     """Fitness evaluation based on user selection and optionally text prompt"""
@@ -240,9 +240,9 @@ def user_guided_evaluation(**kwargs):
                 clip_weight = 1.0 if (current_generation == 0 and len(selected_indices) == 0) else 0.5
                 fitness += clip_score * clip_weight
             else:
-                # Use fallback text fitness function
+               
                 text_score = text_prompt_fitness(tensors[idx], current_text_prompt)
-                # Higher weight for generation 0 when no manual selection exists
+               
                 text_weight = 0.8 if (current_generation == 0 and len(selected_indices) == 0) else 0.3
                 fitness += text_score * text_weight
         
@@ -912,8 +912,8 @@ with gr.Blocks(title="Interactive Evolutionary Art", css="""
         gr.HTML('<div class="section-header">💭 Text Guidance</div>')
         
         text_prompt_input = gr.Textbox(
-            label="📝 Text Prompt (REQUIRED for guided evolution)",
-            placeholder="e.g., 'bright colorful patterns' or 'dark geometric shapes' or 'smooth flowing curves'",
+            label="📝 Text Prompt ",
+            placeholder="e.g., 'bright colorful patterns' or 'smooth flowing curves'",
             value="",
             info="Enter a description to guide the initial generation. Even without CLIP, basic text guidance will be used.",
             lines=2
