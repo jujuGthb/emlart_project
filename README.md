@@ -1,123 +1,102 @@
-# EMLART-GP - Tutorial GECCO 2025
+# Interactive Evolutionary Art System
 
-This is a repository that serves as support for the Tutorial at GECCO 2025: [Evolutionary Art and Design in the Machine Learning Era](https://gecco-2025.sigevo.org/Tutorial?itemId=5120) 
+An interactive web application that combines evolutionary algorithms with human selection to generate unique artwork through real-time collaboration between users and AI.
 
+## Features
+
+- **Interactive Evolution**: Guide art generation through visual selection
+- **Hybrid AI-Human Evaluation**: Combines CLIP/LAION AI scoring with human preferences
+- **Hardware Adaptive**: Runs on GPU, CPU, or basic mode without AI models
+- **Real-time Analytics**: Track evolution progress with comprehensive statistics
+- **Generation History**: Browse and navigate through evolution timelines
+
+## Prerequisites
+
+### System Requirements
+- **Python**: Version 3.7 or higher
+- **OS**: Windows, macOS, or Linux
+- **Memory**: 4GB RAM minimum (8GB+ recommended)
+- **Storage**: 2GB free space
+
+### Hardware Options
+- **Full AI Mode**: CUDA GPU with 8GB+ VRAM (recommended)
+- **CPU Mode**: Modern CPU (functional but slower)
+- **Basic Mode**: Any hardware (no AI models required)
 
 ## Installation
 
-Start by cloning the repository and enter the repository folder by issuing the following terminal commands:
-
+1. **Clone the Repository**
 ```bash
-git clone https://github.com/jncor/emlart-gp-tutorial.git
-cd emlart-gp-tutorial/
-```
+git clone https://github.com/jujuGthb/emlart_project
+cd emlart-gp-tutorial
 
-This setup assumes and recomends a conda version greater than 23.3.1. The following commands will install the required packages to execute the code:
+2. **Creaate Virtual Environment**
+python -m venv venv
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+source venv/bin/activate
+3. **Install dependancies**
 
-```bash
-conda create --name emlart-tutorial --file env.txt
-conda activate emlart-tutorial
-python -m pip install git+https://github.com/openai/CLIP.git
-```
+- For Full AI Project with AI Experience
+pip install gradio numpy pillow matplotlib tensorflow
+pip install torch torchvision torchaudio
+pip install git+https://github.com/openai/CLIP.git
+pip install laion-aesthetics
 
-
-You will also need the weights for the models used by the provided scripts. You can get them from the following link:
-[models](https://www.dropbox.com/s/vusdr3oo5htfqh9/models.zip?dl=1) 
-
-Just unzip the file ensuring that a folder called "models" is inside the cloned repository. 
-```bash
-models/
-tensorgp/
-stablediffusion_examples/
-emlart_gp.py
-image_evaluator.py
-image_evaluator_batch.py
-laion_aesthetics.py
-...
-```
+- For basic or Testing mode
+pip install gradio numpy pillow matplotlib tensorflow
 
 ## Usage
+1. Run the Application
+Full Version:
 
-To execute the emlart-gp approach use the following command on the terminal in the repository folder:
+python emlart_gp.py
 
-```console
-python emlart_gp.py <starting random seed number> <# of runs> <# of generations> <text prompt>
-```
-E.g.
-```bash
-python emlart_gp.py 10 1 30 "sunset, bright colors" 
-``` 
+To test:
+python test.py
+2. Access the Interface
+- Open Web browser
+- Navigate to http://localhost:7860
 
-To execute the image evaluator based on Laion aesthetics machine learning model and cosine similarity with the a provided prompt via OpenAI Clip you should issue the following command:
+3. Configure Evolution (Setup Tab)
 
-```console
-python image_evaluator.py <path to the image> <text prompt>
-```
-E.g.
-```bash
-python image_evaluator.py "image_examples/stability-ai-out-0.png" "an image of a red square, a blue square and a yellow square" 
-```
+- Set population size (10-200)
 
-We can also execute the image evaluator on batch to process a given folder with images to extract the cosine similarity and aesthetic evaluation of the input:
+- Choose generations (1-100)
 
-```console
-python image_evaluator.py <mps|cuda|cpu> <image_folder_to_process> <text prompt>
-```
-E.g.
+- Select image resolution (224x224 to 512x512)
 
-```bash
-python image_evaluator_batch.py mps image_examples "an image of a red square, a blue square and a yellow square"
-```
+- Enter text prompt
 
+- Click "Initialize Enhanced Evolution"
 
-## Reproducing the Tutorial 
+4. Interact with Evolution (Evolution Tab)
+5. Monitor Progress (Statistics Tab)
 
-After the installation, we start by running the EML-gp approach to generate a run to evolve an image aligned with the following prompt: "a red square, a blue square and a yellow square" 
+## Expected Output
+Successful with AI Models:
 
-```bash
-python emlart_gp.py 11 1 30 "an image of a red square, a blue square and a yellow square"
-```
-The folder "runs" will hold the results of this step. E.g. "runs/emlart-gp/emlart-gp__run__XXXX/00031_ind00000_best_overall.png" will be the best generate image found by running the above command.
+Full CLIP + LAION aesthetic model loaded successfully on cuda
+Running on local URL: http://localhost:7860
 
-We have examples of image generated by some of the latest generative machine learning models on the folder: "image_examples/". We have used the following models for this step:
-- **Stability AI Stable Diffusion (Replicate)**  
-  [https://replicate.com/stability-ai/stable-diffusion?prediction=7cpzt5gmfdrj00cgnv58a6afm0](https://replicate.com/stability-ai/stable-diffusion?prediction=7cpzt5gmfdrj00cgnv58a6afm0)
+Test Mode:
+CLIP not available - running in basic mode
+Running on local URL: http://localhost:7860
 
-- **Stability AI Stable Diffusion 3.5**  
-  [https://huggingface.co/stabilityai/stable-diffusion-3.5-large?text=an+image+of+a+red+square%2C+a+blue+square+and+a+yellow+square](https://huggingface.co/stabilityai/stable-diffusion-3.5-large?text=an+image+of+a+red+square%2C+a+blue+square+and+a+yellow+square)
+## Project Structure After Running
+interactive_evolution/
+├── run_YYYYMMDD_HHMMSS/
+│   ├── generations/
+│   ├── selected/
 
-- **Stability AI Stable Diffusion XL**  
-  [https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0?text=an+image+of+a+red+square+a+blue+square+and+a+yellow+square](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0?text=an+image+of+a+red+square+a+blue+square+and+a+yellow+square)
+## Troubleshooting
 
-- **FLUX**  
-  [https://huggingface.co/black-forest-labs/FLUX.1-dev?text=an+image+of+a+red+square%2C+a+blue+square+and+a+yellow+square](https://huggingface.co/black-forest-labs/FLUX.1-dev?text=an+image+of+a+red+square%2C+a+blue+square+and+a+yellow+square)
+**Missing Dependencies:**
+pip install [missing-package-name]
 
+**Port Already in Use:**
+demo.launch(server_port=7861)
 
-Generate and download them to the image_examples folder. Next, we can now evaluate our images by using the "image_evaluator_batch.py" script to evaluate and output the results in terms of aesthetic evaluation based on laion aesthetic model and based on cosine similirity between the image features and the prompt.
-
-```bash
-python image_evaluator_batch.py mps image_examples "an image of a red square, a blue square and a yellow square"
-```
-
-With the image_examples folder of the cloned repository it should yeild the following results:
-
-```
-loading laion model
-loading clip model
-done!
-flux1-dev_2025-1.jpeg - Aesthetic: 5.0050, Similarity: 0.3054
-_emlart-gp-00031_ind00000_best_overall-version3.png - Aesthetic: 4.3801, Similarity: 0.3796
-_emlart-gp-00031_ind00000_best_overall-version1.png - Aesthetic: 3.9809, Similarity: 0.3738
-stability-ai-2024-3.png - Aesthetic: 4.8175, Similarity: 0.2402
-stability-ai-2024-2.png - Aesthetic: 4.3327, Similarity: 0.2571
-stability-ai-2024-0.png - Aesthetic: 4.9255, Similarity: 0.2888
-stable-diffusion-35-large-2025-0.jpeg - Aesthetic: 4.6267, Similarity: 0.3303
-stable-diffusion-xl-base-2025-1.jpeg - Aesthetic: 5.9451, Similarity: 0.2091
-stability-ai-2024-1.png - Aesthetic: 4.2239, Similarity: 0.2808
-stable-diffusion-xl-base-2025-0.jpeg - Aesthetic: 5.1240, Similarity: 0.2482
-stable-diffusion-35-large-2025-1.jpeg - Aesthetic: 5.4016, Similarity: 0.3274
-chatgpt-2025_00_13_54.png - Aesthetic: 5.1800, Similarity: 0.3013
-flux1-dev_2025-2.jpeg - Aesthetic: 3.1616, Similarity: 0.3359
-DALL·E 2024-07-14 02.49.31.png - Aesthetic: 5.8161, Similarity: 0.2242
-Results exported to evaluation_results.csv
-```
+## Documentation:
+Project Report: Complete system documentation
