@@ -83,8 +83,6 @@ interactive_evolution/
 ├── run_YYYYMMDD_HHMMSS/
 │   ├── generations/
 │   ├── selected/
-│   ├── statistics/
-│   └── config.json
 
 ## Troubleshooting
 | Issue | Solution |
@@ -119,4 +117,4 @@ Performance Tips:
 |----------|-------------|
 | Project Report | Complete system documentation (main branch) |
 | Source Code | Detailed inline documentation and comments |
-| Research Paper | Theoretical foundations and implementation |
+
