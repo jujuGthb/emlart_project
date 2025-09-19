@@ -110,18 +110,3 @@ demo.launch(server_port=7861)
 
 ## Documentation
 - Project Report: Complete system documentation
-
-## 📌 Roadmap / Future Work
-- Add multi-user collaborative sessions
-- Improve mutation strategies for image evolution
-- Expand support for additional AI aesthetic models
-
-## 🤝 Contributing
-- Fork the repository
-- Create a new branch (`feature/awesome-feature`)
-- Commit your changes
-- Push to the branch
-- Open a Pull Request
-
-## 📜 License
-This project is licensed under the MIT License.
