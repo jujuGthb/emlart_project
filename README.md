@@ -39,7 +39,11 @@ For Full AI Experience:
 pip install gradio numpy pillow matplotlib tensorflow
 pip install torch torchvision torchaudio
 pip install git+https://github.com/openai/CLIP.git
-pip install laion-aesthetics
+
+4. Download AI Models (Optional but Recommended)
+Download the pre-trained models from: https://github.com/cdvetal/emlart-gp-tutorial
+- Follow the model installation instructions in the repository
+- Place models in the appropriate directory as specified
 
 For Basic/Testing Mode:
 pip install gradio numpy pillow matplotlib tensorflow
@@ -90,6 +94,7 @@ interactive_evolution/
 | Missing Dependencies | pip install [missing-package-name] |
 | Port Already in Use | demo.launch(server_port=7861) |
 | GPU Issues | System automatically falls back to CPU/basic mode |
+| Model Loading Issues | Download models from https://github.com/cdvetal/emlart-gp-tutorial |
 
 Performance Tips:
 - Start with smaller population sizes (20-30)
@@ -117,4 +122,3 @@ Performance Tips:
 |----------|-------------|
 | Project Report | Complete system documentation (main branch) |
 | Source Code | Detailed inline documentation and comments |
-
