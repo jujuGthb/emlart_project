@@ -3,7 +3,6 @@
 An interactive web application that combines evolutionary algorithms with human selection to generate unique artwork through real-time collaboration between users and AI.
 
 ## Features
-
 - **Interactive Evolution**: Guide art generation through visual selection
 - **Hybrid AI-Human Evaluation**: Combines CLIP/LAION AI scoring with human preferences
 - **Hardware Adaptive**: Runs on GPU, CPU, or basic mode without AI models
@@ -25,7 +24,104 @@ An interactive web application that combines evolutionary algorithms with human 
 
 ## Installation
 
-### 1. Clone the Repository
+1. **Clone the Repository**
 ```bash
 git clone https://github.com/jujuGthb/emlart_project
 cd emlart-gp-tutorial
+```
+
+2. **Create Virtual Environment**
+```bash
+python -m venv venv
+# Windows:
+venv\Scripts\activate
+# macOS/Linux:
+source venv/bin/activate
+```
+
+3. **Install Dependencies**
+```bash
+# For Full AI Project with AI Experience
+pip install gradio numpy pillow matplotlib tensorflow
+pip install torch torchvision torchaudio
+pip install git+https://github.com/openai/CLIP.git
+pip install laion-aesthetics
+
+# For basic or Testing mode
+pip install gradio numpy pillow matplotlib tensorflow
+```
+
+## Usage
+
+1. **Run the Application**
+```bash
+# Full Version:
+python emlart_gp.py
+
+# To test:
+python test.py
+```
+
+2. **Access the Interface**
+- Open Web browser
+- Navigate to: `http://localhost:7860`
+
+3. **Configure Evolution (Setup Tab)**
+- Set population size (10-200)
+- Choose generations (1-100)
+- Select image resolution (224x224 to 512x512)
+- Enter text prompt
+- Click "Initialize Enhanced Evolution"
+
+4. **Interact with Evolution (Evolution Tab)**
+5. **Monitor Progress (Statistics Tab)**
+
+## Expected Output
+**Successful with AI Models:**
+```
+Full CLIP + LAION aesthetic model loaded successfully on cuda
+Running on local URL: http://localhost:7860
+```
+
+**Test Mode:**
+```
+CLIP not available - running in basic mode
+Running on local URL: http://localhost:7860
+```
+
+## Project Structure After Running
+```
+interactive_evolution/
+├── run_YYYYMMDD_HHMMSS/
+│   ├── generations/
+│   ├── selected/
+```
+
+## Troubleshooting
+**Missing Dependencies:**
+```bash
+pip install [missing-package-name]
+```
+
+**Port Already in Use:**
+```python
+demo.launch(server_port=7861)
+```
+
+## Documentation
+- Project Report: Complete system documentation
+
+## 📌 Roadmap / Future Work
+- Add multi-user collaborative sessions
+- Improve mutation strategies for image evolution
+- Expand support for additional AI aesthetic models
+
+## 🤝 Contributing
+- Fork the repository
+- Create a new branch (`feature/awesome-feature`)
+- Commit your changes
+- Push to the branch
+- Open a Pull Request
+
+## 📜 License
+This project is licensed under the MIT License.
