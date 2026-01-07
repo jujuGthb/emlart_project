@@ -12,9 +12,9 @@ An interactive web application that combines evolutionary algorithms with human 
 🔧 Hardware Options:
 | Mode | Requirements | Performance |
 |------|-------------|-------------|
-|  Full AI Mode | CUDA GPU with 8GB+ VRAM | ⭐ Recommended |
-|  CPU Mode | Modern CPU | ⭐ Functional but slower |
-|  Basic Mode | Any hardware | ⭐ No AI models required |
+|  Full AI Mode | CUDA GPU with 8GB+ VRAM |  Recommended |
+|  CPU Mode | Modern CPU |  Functional but slower |
+|  Basic Mode | Any hardware | No AI models required |
 
 ##  Installation
 1️⃣  Clone the Repository
@@ -59,9 +59,9 @@ python test.py       # Test Version
 |  Test Mode | CLIP not available - running in basic mode |
 |  Both Modes | Running on local URL: http://localhost:7860 |
 
-## 📁 Project Structure After Running
+##  Project Structure After Running
  interactive_evolution/
-├── 📂 run_YYYYMMDD_HHMMSS/
+├──  run_YYYYMMDD_HHMMSS/
 │   ├── generations/
 │   ├── selected/
 
@@ -70,8 +70,7 @@ python test.py       # Test Version
 | Issue | Solution |
 |-------|----------|
 |  Missing Dependencies | pip install [missing-package-name] |
-|  Port Already in Use | demo.launch(server_port=7861) |
-| ⚠️ GPU Issues | System automatically falls back to CPU/basic mode |
+|  GPU Issues | System automatically falls back to CPU/basic mode |
 |  Model Loading Issues | Download models from https://github.com/cdvetal/emlart-gp-tutorial |
 
 ##  Documentation
